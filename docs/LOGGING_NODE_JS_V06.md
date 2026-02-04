@@ -51,11 +51,11 @@ Before implementing Winston logging, manually search and replace all console sta
 
 ### Required Variables
 
-**NODE_ENV** (required)
+**NEXT_PUBLIC_MODE** (required)
 
 - Values: `development`, `testing`, or `production`
 - Determines logging mode
-- Next.js fallback: Use `NEXT_PUBLIC_MODE` if `NODE_ENV` is not set
+- Next.js fallback: Use `NEXT_PUBLIC_MODE` if `NEXT_PUBLIC_MODE` is not set
 
 **NAME_APP** (required)
 
@@ -110,7 +110,7 @@ Standard Node.js applications use `.env` files. Next.js applications should chec
 
 Environment variable validation occurs in the logger configuration file before logger initialization:
 
-1. Validate all required variables are present (`NODE_ENV`, `NAME_APP`, `PATH_TO_LOGS`)
+1. Validate all required variables are present (`NEXT_PUBLIC_MODE`, `NAME_APP`, `PATH_TO_LOGS`)
 2. If any required variable is missing:
    - Output fatal error to stderr identifying the specific missing variable
    - Exit immediately with non-zero exit code (e.g., `process.exit(1)`)
@@ -157,7 +157,7 @@ Winston log levels (in order of severity):
 
 - Each child process manages its own Winston logger instance
 - Parent process passes `NAME_CHILD_PROCESS_[descriptor]` value to child as `NAME_APP`
-- Child inherits all other logging environment variables (`NODE_ENV`, `PATH_TO_LOGS`, `LOG_MAX_SIZE`, `LOG_MAX_FILES`)
+- Child inherits all other logging environment variables (`NEXT_PUBLIC_MODE`, `PATH_TO_LOGS`, `LOG_MAX_SIZE`, `LOG_MAX_FILES`)
 - Child and parent log to separate files based on their respective `NAME_APP` values
 
 ## File Rotation

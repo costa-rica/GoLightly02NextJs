@@ -18,7 +18,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 - [x] Create `.env.local` file in project root
 - [x] Add `NEXT_PUBLIC_API_BASE_URL` environment variable
 - [x] Add Winston logging environment variables per docs/LOGGING_NODE_JS_V06.md:
-  - `NODE_ENV` (development/testing/production)
+  - `NEXT_PUBLIC_MODE` (development/testing/production)
   - `NAME_APP=Mantrify01NextJs`
   - `PATH_TO_LOGS` (absolute path)
   - `LOG_MAX_SIZE` (optional, default 5MB)

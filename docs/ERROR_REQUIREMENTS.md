@@ -41,9 +41,10 @@ res.status(500).json({
   error: {
     code: "MACHINE_RETRIEVAL_FAILED",
     message: "Failed to retrieve machine information",
-    details: process.env.NODE_ENV === 'development' ? err.message : undefined,
-    status: 500
-  }
+    details:
+      process.env.NEXT_PUBLIC_MODE === "development" ? err.message : undefined,
+    status: 500,
+  },
 });
 
 // Validation errors
@@ -54,9 +55,9 @@ res.status(400).json({
     status: 400,
     details: [
       { field: "email", message: "Invalid email format" },
-      { field: "age", message: "Must be 18 or older" }
-    ]
-  }
+      { field: "age", message: "Must be 18 or older" },
+    ],
+  },
 });
 ```
 
