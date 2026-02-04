@@ -2,7 +2,7 @@
 
 ## Project Inspiration
 
-The Mantrify app is a web applicaiton that allows users to create their own guided meditations. Specifically, we want to create **lightly guided meditations**. The goal of Mantrify is to enable users to create these lightly guided meditations that combines purposeful affirmations, common in modern secular/therapeutic meditation, with contemplative silences, allowing users to balance guided reflection with spacious awareness—drawing from diverse meditation traditions worldwide.
+The Mantrify app is a web application that allows users to create their own guided meditations. Specifically, we want to create **lightly guided meditations**. The goal of Mantrify is to enable users to create these lightly guided meditations that combines purposeful affirmations, common in modern secular/therapeutic meditation, with contemplative silences, allowing users to balance guided reflection with spacious awareness—drawing from diverse meditation traditions worldwide.
 
 Contemporary practice emphasizes regular reminders of gratitude, acceptance, and thought non-identification. These concepts are rooted in ancient wisdom and now supported by research.
 
@@ -29,6 +29,12 @@ The navigation bar at the top will be a simple bar with the logo on the left, an
 The navigation bar will be fixed to the top of the screen. The navigation on small screens will be a hamburger menu. clicking on the hamburger menu will display the navigation links by a slide out panel from the left. It will cover 75% of the screen width and have an overlay behind it where the user can click to close the panel.
 
 The admin page will only be accessible to users where isAdmin is true. If the user is not logged in or isAdmin is false, they will be redirected to the homepage. Admin users will see "admin" link in the navigation bar.
+
+## Style
+
+Please use a modern clean style for the website. Use a color scheme that is calming and relaxing. Use a color scheme that is calming and relaxing.
+
+The logo is in public/images/mantrifyLogo02.png and the favicon is in public/images/favicon_io/.
 
 ## Website Homepage
 
