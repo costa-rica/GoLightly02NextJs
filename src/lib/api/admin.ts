@@ -3,6 +3,7 @@ import { Meditation } from '@/store/features/meditationSlice';
 
 export interface AdminUser {
   id: number;
+  username?: string | null;
   email: string;
   isEmailVerified: boolean;
   emailVerifiedAt: string | null;

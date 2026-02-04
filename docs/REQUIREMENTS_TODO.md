@@ -337,37 +337,37 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 6.1 Admin Page Setup
 
-- [ ] Create `src/app/admin/page.tsx`
-- [ ] Wrap with ProtectedRoute component (require isAdmin=true)
-- [ ] Redirect to home if user is not admin
-- [ ] Implement vertical stacked sections layout
+- [x] Create `src/app/admin/page.tsx`
+- [x] Wrap with ProtectedRoute component (require isAdmin=true)
+- [x] Redirect to home if user is not admin
+- [x] Implement vertical stacked sections layout
 
 ### 6.2 Users Section
 
-- [ ] Create expandable/collapsible section with "Users" heading
-- [ ] Default state: expanded
-- [ ] Fetch data from `GET /admin/users` on mount
-- [ ] Handle 401 (not authenticated) and 403 (not admin) errors
+- [x] Create expandable/collapsible section with "Users" heading
+- [x] Default state: expanded
+- [x] Fetch data from `GET /admin/users` on mount
+- [x] Handle 401 (not authenticated) and 403 (not admin) errors
 
 ### 6.3 TableAdminUsers Component
 
-- [ ] Create `src/components/tables/TableAdminUsers.tsx`
-- [ ] Display columns:
+- [x] Create `src/components/tables/TableAdminUsers.tsx`
+- [x] Display columns:
   - ID
   - Username (if available, otherwise email)
   - Email
   - Delete button
-- [ ] Make table responsive with horizontal scroll on mobile
-- [ ] Style consistently with meditation table
+- [x] Make table responsive with horizontal scroll on mobile
+- [x] Style consistently with meditation table
 
 ### 6.4 Delete User Functionality
 
-- [ ] Add delete button (trash icon) for each user
-- [ ] Show confirmation modal before deleting
-- [ ] Connect to `DELETE /admin/users/:id` endpoint
-- [ ] Remove user from table on success
-- [ ] Show error if delete fails
-- [ ] Prevent deleting currently logged-in admin
+- [x] Add delete button (trash icon) for each user
+- [x] Show confirmation modal before deleting
+- [x] Connect to `DELETE /admin/users/:id` endpoint
+- [x] Remove user from table on success
+- [x] Show error if delete fails
+- [x] Prevent deleting currently logged-in admin
 
 ---
 
