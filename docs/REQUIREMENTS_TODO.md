@@ -45,48 +45,48 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ---
 
-## Phase 2: Core Infrastructure
+## Phase 2: Core Infrastructure ✅
 
 ### 2.1 Redux State Management Setup
-- [ ] Install Redux Toolkit and React Redux: `npm install @reduxjs/toolkit react-redux`
-- [ ] Create `src/store/index.ts` for store configuration
-- [ ] Create `src/store/hooks.ts` with typed `useAppDispatch` and `useAppSelector`
+- [x] Install Redux Toolkit and React Redux: `npm install @reduxjs/toolkit react-redux`
+- [x] Create `src/store/index.ts` for store configuration
+- [x] Create `src/store/hooks.ts` with typed `useAppDispatch` and `useAppSelector`
 
 ### 2.2 Authentication State
-- [ ] Create `src/store/features/authSlice.ts`
-- [ ] Define auth state: `user` (id, email, isAdmin), `accessToken`, `isAuthenticated`
-- [ ] Implement actions: `login`, `logout`, `setUser`
-- [ ] Add Redux persist to maintain auth state across page refreshes
+- [x] Create `src/store/features/authSlice.ts`
+- [x] Define auth state: `user` (id, email, isAdmin), `accessToken`, `isAuthenticated`
+- [x] Implement actions: `login`, `logout`, `setUser`
+- [x] Add Redux persist to maintain auth state across page refreshes
 
 ### 2.3 Meditation State
-- [ ] Create `src/store/features/meditationSlice.ts`
-- [ ] Define meditation state: `meditations` array, `loading`, `error`
-- [ ] Implement actions: `setMeditations`, `addMeditation`, `deleteMeditation`, `toggleFavorite`
+- [x] Create `src/store/features/meditationSlice.ts`
+- [x] Define meditation state: `meditations` array, `loading`, `error`
+- [x] Implement actions: `setMeditations`, `addMeditation`, `deleteMeditation`, `toggleFavorite`
 
 ### 2.4 API Client Setup
-- [ ] Create `src/lib/api/client.ts` for base API configuration
-- [ ] Implement axios instance with base URL from environment
-- [ ] Add request interceptor to attach JWT token from Redux state
-- [ ] Add response interceptor for global error handling
-- [ ] Implement retry logic for failed requests
+- [x] Create `src/lib/api/client.ts` for base API configuration
+- [x] Implement axios instance with base URL from environment
+- [x] Add request interceptor to attach JWT token from Redux state
+- [x] Add response interceptor for global error handling
+- [x] Implement retry logic for failed requests
 
 ### 2.5 API Service Modules
-- [ ] Create `src/lib/api/auth.ts`:
+- [x] Create `src/lib/api/auth.ts`:
   - `register(email, password)`
   - `login(email, password)`
   - `forgotPassword(email)`
   - `resetPassword(token, newPassword)`
-- [ ] Create `src/lib/api/mantras.ts`:
+- [x] Create `src/lib/api/mantras.ts`:
   - `getAllMantras(includePrivate)`
   - `createMantra(mantraData)`
   - `streamMantra(id)` (returns stream URL)
   - `favoriteMantra(id, isFavorite)`
   - `deleteMantra(id)`
-- [ ] Create `src/lib/api/sounds.ts`:
+- [x] Create `src/lib/api/sounds.ts`:
   - `getSoundFiles()`
   - `uploadSoundFile(file, name, description)`
   - `deleteSoundFile(id)`
-- [ ] Create `src/lib/api/admin.ts`:
+- [x] Create `src/lib/api/admin.ts`:
   - `getUsers()`
   - `deleteUser(id)`
   - `getAllMantras()`
@@ -95,13 +95,13 @@ This document provides a detailed, phase-based task list for building the Mantri
   - `deleteQueuerRecord(id)`
 
 ### 2.6 Utility Functions
-- [ ] Create `src/lib/utils/validation.ts`:
+- [x] Create `src/lib/utils/validation.ts`:
   - Email validation
   - Password validation (min 6 characters)
-- [ ] Create `src/lib/utils/formatters.ts`:
+- [x] Create `src/lib/utils/formatters.ts`:
   - Date formatting
   - Duration formatting (for pause_duration)
-- [ ] Create `src/lib/utils/auth.ts`:
+- [x] Create `src/lib/utils/auth.ts`:
   - Token storage helpers
   - Protected route checker
 
