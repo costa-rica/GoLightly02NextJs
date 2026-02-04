@@ -1,3 +1,4 @@
+import CreateMeditationForm from "@/components/forms/CreateMeditationForm";
 import TableMeditation from "@/components/tables/TableMeditation";
 
 export default function Home() {
@@ -19,19 +20,7 @@ export default function Home() {
 
         <TableMeditation />
 
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-display font-semibold text-calm-900">
-              Create New Meditation
-            </h2>
-            <span className="text-sm text-calm-500">For registered users</span>
-          </div>
-          <div className="rounded-3xl border border-dashed border-calm-200 bg-white/70 p-6 shadow-sm">
-            <p className="text-sm text-calm-500">
-              Creation form will appear here after authentication.
-            </p>
-          </div>
-        </section>
+        <CreateMeditationForm />
       </div>
     </main>
   );

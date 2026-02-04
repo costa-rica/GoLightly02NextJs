@@ -246,70 +246,70 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 5.1 Create Meditation Section Component
 
-- [ ] Create `src/components/forms/CreateMeditationForm.tsx`
-- [ ] Implement expandable/collapsible section with "Create New Meditation" heading
-- [ ] Default state: collapsed
-- [ ] Hide section completely if user is not logged in
-- [ ] Show section only for authenticated users
+- [x] Create `src/components/forms/CreateMeditationForm.tsx`
+- [x] Implement expandable/collapsible section with "Create New Meditation" heading
+- [x] Default state: collapsed
+- [x] Hide section completely if user is not logged in
+- [x] Show section only for authenticated users
 
 ### 5.2 Meditation Metadata Fields
 
-- [ ] Add "Title" text input field (required)
-- [ ] Add "Description" textarea field (optional)
-- [ ] Add "Visibility" toggle/select (Public/Private)
-- [ ] Style with Tailwind CSS form controls
-- [ ] Add field validation (title required, max lengths)
+- [x] Add "Title" text input field (required)
+- [x] Add "Description" textarea field (optional)
+- [x] Add "Visibility" toggle/select (Public/Private)
+- [x] Style with Tailwind CSS form controls
+- [x] Add field validation (title required, max lengths)
 
 ### 5.3 Dynamic Row System
 
-- [ ] Display initial empty row on section expand
-- [ ] Implement "Add Row" button below the table
-- [ ] Each row has unique id (sequential: 1, 2, 3...)
-- [ ] Allow reordering rows (drag-and-drop or up/down buttons)
-- [ ] Add "Delete Row" button for each row
+- [x] Display initial empty row on section expand
+- [x] Implement "Add Row" button below the table
+- [x] Each row has unique id (sequential: 1, 2, 3...)
+- [x] Allow reordering rows (drag-and-drop or up/down buttons)
+- [x] Add "Delete Row" button for each row
 
 ### 5.4 Row Type Dropdown
 
-- [ ] Add leftmost column with dropdown selector
-- [ ] Options: "Text", "Pause", "Sound File"
-- [ ] Default selection: "Text"
-- [ ] On change: show/hide relevant input fields
-- [ ] Style dropdown consistently with theme
+- [x] Add leftmost column with dropdown selector
+- [x] Options: "Text", "Pause", "Sound File"
+- [x] Default selection: "Text"
+- [x] On change: show/hide relevant input fields
+- [x] Style dropdown consistently with theme
 
 ### 5.5 Text Row Type
 
-- [ ] Show when dropdown is set to "Text"
-- [ ] Display textarea for text input (2 rows minimum)
-- [ ] Add optional "Speed" input (decimal, range 0.7-1.3)
-- [ ] Add small label: "Speed (0.7-1.3)"
-- [ ] Validate speed input on blur
-- [ ] Note: voice_id is omitted per requirements
+- [x] Show when dropdown is set to "Text"
+- [x] Display textarea for text input (2 rows minimum)
+- [x] Add optional "Speed" input (decimal, range 0.7-1.3)
+- [x] Add small label: "Speed (0.7-1.3)"
+- [x] Validate speed input on blur
+- [x] Note: voice_id is omitted per requirements
 
 ### 5.6 Pause Row Type
 
-- [ ] Show when dropdown is set to "Pause"
-- [ ] Display number input for duration
-- [ ] Add label: "Duration (seconds)"
-- [ ] Accept decimal values (e.g., 3.0, 5.5)
-- [ ] Validate positive numbers only
+- [x] Show when dropdown is set to "Pause"
+- [x] Display number input for duration
+- [x] Add label: "Duration (seconds)"
+- [x] Accept decimal values (e.g., 3.0, 5.5)
+- [x] Validate positive numbers only
 
 ### 5.7 Sound File Row Type
 
-- [ ] Show when dropdown is set to "Sound File"
-- [ ] Fetch sound files from `GET /sounds/sound_files` on page load
-- [ ] Create dropdown populated with sound file names
-- [ ] Store selected sound file's filename (not id)
-- [ ] Add label: "Select Sound File"
-- [ ] Handle loading and error states for sound files fetch
+- [x] Show when dropdown is set to "Sound File"
+- [x] Fetch sound files from `GET /sounds/sound_files` on page load
+- [x] Create dropdown populated with sound file names
+- [x] Store selected sound file's filename (not id)
+- [x] Add label: "Select Sound File"
+- [x] Handle loading and error states for sound files fetch
 
 ### 5.8 Form Submission
 
-- [ ] Add "Submit" button below the rows
-- [ ] Validate all rows before submission:
+- [x] Add "Submit" button below the rows
+- [x] Validate all rows before submission:
   - Text rows must have text content
   - Pause rows must have duration > 0
   - Sound File rows must have selection
-- [ ] Transform form data to match API format:
+- [x] Transform form data to match API format:
   ```json
   {
     "title": "string",
@@ -322,14 +322,14 @@ This document provides a detailed, phase-based task list for building the Mantri
     ]
   }
   ```
-- [ ] Connect to `POST /mantras/create` endpoint
-- [ ] Show loading state during submission
-- [ ] On success:
+- [x] Connect to `POST /mantras/create` endpoint
+- [x] Show loading state during submission
+- [x] On success:
   - Show success message
   - Add new meditation to table
   - Reset form
   - Collapse section
-- [ ] On error: display validation errors inline
+- [x] On error: display validation errors inline
 
 ---
 
