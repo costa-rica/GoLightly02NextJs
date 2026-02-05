@@ -4,10 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import TableAdminUsers from "@/components/tables/TableAdminUsers";
 import TableAdminSoundsFiles from "@/components/tables/TableAdminSoundsFiles";
+import TableAdminMeditations from "@/components/tables/TableAdminMeditations";
 import ModalUploadSoundFile from "@/components/modals/ModalUploadSoundFile";
 import ModalConfirmDelete from "@/components/modals/ModalConfirmDelete";
 import Toast from "@/components/Toast";
-import { deleteUser, getUsers, type AdminUser } from "@/lib/api/admin";
+import { deleteMantra, deleteUser, getAllMantras, getUsers, type AdminUser } from "@/lib/api/admin";
+import type { Meditation } from "@/store/features/meditationSlice";
 import { deleteSoundFile, getSoundFiles, type SoundFile } from "@/lib/api/sounds";
 import { useAppSelector } from "@/store/hooks";
 
@@ -27,6 +29,12 @@ export default function AdminPage() {
   const [soundDeleteTarget, setSoundDeleteTarget] = useState<SoundFile | null>(null);
   const [isSoundDeleting, setIsSoundDeleting] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isMeditationsExpanded, setIsMeditationsExpanded] = useState(false);
+  const [meditations, setMeditations] = useState<Meditation[]>([]);
+  const [meditationsLoading, setMeditationsLoading] = useState(false);
+  const [meditationsError, setMeditationsError] = useState<string | null>(null);
+  const [meditationDeleteTarget, setMeditationDeleteTarget] = useState<Meditation | null>(null);
+  const [isMeditationDeleting, setIsMeditationDeleting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -66,6 +74,25 @@ export default function AdminPage() {
     }
   }, []);
 
+  const fetchMeditations = useCallback(async () => {
+    setMeditationsLoading(true);
+    setMeditationsError(null);
+
+    try {
+      const response = await getAllMantras();
+      setMeditations(response.mantras ?? []);
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        setMeditationsError("You do not have permission to view meditations.");
+      } else {
+        setMeditationsError(err?.response?.data?.error?.message || "Unable to load meditations.");
+      }
+    } finally {
+      setMeditationsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -74,6 +101,11 @@ export default function AdminPage() {
     if (!isSoundsExpanded || soundFiles.length > 0 || soundsLoading) return;
     fetchSoundFiles();
   }, [fetchSoundFiles, isSoundsExpanded, soundFiles.length, soundsLoading]);
+
+  useEffect(() => {
+    if (!isMeditationsExpanded || meditations.length > 0 || meditationsLoading) return;
+    fetchMeditations();
+  }, [fetchMeditations, isMeditationsExpanded, meditations.length, meditationsLoading]);
 
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
@@ -110,6 +142,22 @@ export default function AdminPage() {
       setToast({ message, variant: "error" });
     } finally {
       setIsSoundDeleting(false);
+    }
+  };
+
+  const handleMeditationDeleteConfirm = async () => {
+    if (!meditationDeleteTarget) return;
+    setIsMeditationDeleting(true);
+    try {
+      await deleteMantra(meditationDeleteTarget.id);
+      setMeditations((prev) => prev.filter((item) => item.id !== meditationDeleteTarget.id));
+      setToast({ message: "Meditation deleted.", variant: "success" });
+      setMeditationDeleteTarget(null);
+    } catch (err: any) {
+      const message = err?.response?.data?.error?.message || "Unable to delete meditation.";
+      setToast({ message, variant: "error" });
+    } finally {
+      setIsMeditationDeleting(false);
     }
   };
 
@@ -197,6 +245,81 @@ export default function AdminPage() {
                     users={users}
                     currentUserId={user?.id}
                     onDelete={(target) => setDeleteTarget(target)}
+                  />
+                )}
+              </div>
+            )}
+          </section>
+
+          <section className="space-y-4">
+            <button
+              type="button"
+              onClick={() => setIsMeditationsExpanded((prev) => !prev)}
+              className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
+              aria-expanded={isMeditationsExpanded}
+            >
+              <div>
+                <h2 className="text-xl font-display font-semibold text-calm-900">Meditations</h2>
+                <p className="text-sm text-calm-500">Review all meditation content</p>
+              </div>
+              <span className="text-calm-500">
+                {isMeditationsExpanded ? (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
+              </span>
+            </button>
+
+            {isMeditationsExpanded && (
+              <div className="rounded-3xl border border-calm-200/70 bg-white p-4 shadow-sm md:p-6">
+                {meditationsLoading && (
+                  <div className="space-y-3">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <div
+                        key={`admin-meditations-skeleton-${index}`}
+                        className="flex items-center justify-between rounded-2xl border border-calm-100 bg-calm-50 px-4 py-3 animate-pulse"
+                      >
+                        <div className="h-4 w-1/3 rounded-full bg-calm-200" />
+                        <div className="h-4 w-20 rounded-full bg-calm-200" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {!meditationsLoading && meditationsError && (
+                  <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-600">
+                    <p>{meditationsError}</p>
+                    <button
+                      type="button"
+                      onClick={fetchMeditations}
+                      className="mt-3 rounded-full border border-red-200 px-4 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+
+                {!meditationsLoading && !meditationsError && (
+                  <TableAdminMeditations
+                    meditations={meditations}
+                    onDelete={(target) => setMeditationDeleteTarget(target)}
                   />
                 )}
               </div>
@@ -318,6 +441,15 @@ export default function AdminPage() {
         isLoading={isSoundDeleting}
         onClose={() => setSoundDeleteTarget(null)}
         onConfirm={handleSoundDeleteConfirm}
+      />
+      <ModalConfirmDelete
+        isOpen={!!meditationDeleteTarget}
+        title={`Delete ${meditationDeleteTarget?.title || "meditation"}`}
+        message="This will permanently remove the meditation. Admins can delete any meditation."
+        confirmLabel="Delete meditation"
+        isLoading={isMeditationDeleting}
+        onClose={() => setMeditationDeleteTarget(null)}
+        onConfirm={handleMeditationDeleteConfirm}
       />
     </ProtectedRoute>
   );

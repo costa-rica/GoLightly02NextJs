@@ -419,29 +419,29 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 8.1 Meditations Section
 
-- [ ] Create expandable/collapsible section with "Meditations" heading
-- [ ] Default state: collapsed
-- [ ] Fetch data from `GET /admin/mantras` on expand
+- [x] Create expandable/collapsible section with "Meditations" heading
+- [x] Default state: collapsed
+- [x] Fetch data from `GET /admin/mantras` on expand
 
 ### 8.2 TableAdminMeditations Component
 
-- [ ] Create `src/components/tables/TableAdminMeditations.tsx`
-- [ ] Display columns:
+- [x] Create `src/components/tables/TableAdminMeditations.tsx`
+- [x] Display columns:
   - ID
   - Title (use title from API response)
   - Visibility (public/private)
   - Listens
   - Delete button
-- [ ] Make table responsive
-- [ ] Show all meditations regardless of visibility/ownership
+- [x] Make table responsive
+- [x] Show all meditations regardless of visibility/ownership
 
 ### 8.3 Delete Meditation (Admin)
 
-- [ ] Add delete button for each meditation
-- [ ] Show confirmation modal with warning (admin can delete any meditation)
-- [ ] Connect to `DELETE /admin/mantras/:id` endpoint
-- [ ] Remove from table on success
-- [ ] Handle errors appropriately
+- [x] Add delete button for each meditation
+- [x] Show confirmation modal with warning (admin can delete any meditation)
+- [x] Connect to `DELETE /admin/mantras/:id` endpoint
+- [x] Remove from table on success
+- [x] Handle errors appropriately
 
 ---
 
