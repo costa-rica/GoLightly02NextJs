@@ -7,7 +7,7 @@ export default function Home() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:px-8 md:py-16">
         <header className="rounded-3xl border border-calm-200/70 bg-white/80 p-8 shadow-sm backdrop-blur">
           <p className="text-xs uppercase tracking-[0.25em] text-calm-500">
-            Mantrify
+            Go Lightly
           </p>
           <h1 className="mt-3 text-4xl font-display font-semibold text-calm-900 md:text-5xl">
             Create lightly guided meditations

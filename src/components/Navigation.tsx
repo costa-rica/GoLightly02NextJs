@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { logout } from '@/store/features/authSlice'
-import { clearAuthStorage } from '@/lib/utils/auth'
-import Toast from '@/components/Toast'
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { logout } from "@/store/features/authSlice";
+import { clearAuthStorage } from "@/lib/utils/auth";
+import Toast from "@/components/Toast";
 
 type NavigationProps = {
-  onLoginClick?: () => void
-}
+  onLoginClick?: () => void;
+};
 
 export default function Navigation({ onLoginClick }: NavigationProps) {
-  const dispatch = useAppDispatch()
-  const router = useRouter()
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isMobileOpen) return
-    const originalOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    if (!isMobileOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = originalOverflow
-    }
-  }, [isMobileOpen])
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isMobileOpen]);
 
   const handleAuthClick = () => {
     if (isAuthenticated) {
-      dispatch(logout())
-      clearAuthStorage()
-      setToastMessage('You have been logged out.')
-      router.push('/')
-      setIsMobileOpen(false)
-      return
+      dispatch(logout());
+      clearAuthStorage();
+      setToastMessage("You have been logged out.");
+      router.push("/");
+      setIsMobileOpen(false);
+      return;
     }
 
-    onLoginClick?.()
-    setIsMobileOpen(false)
-  }
+    onLoginClick?.();
+    setIsMobileOpen(false);
+  };
 
-  const handleCloseMobile = () => setIsMobileOpen(false)
+  const handleCloseMobile = () => setIsMobileOpen(false);
 
   const navLinks = (
     <>
@@ -64,7 +64,7 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
         </Link>
       )}
     </>
-  )
+  );
 
   return (
     <>
@@ -72,14 +72,16 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
         <div className="bg-white/80 backdrop-blur border-b border-calm-200/70 shadow-sm">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
             <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/images/mantrifyLogo02.png"
-              alt="Mantrify"
-              width={36}
-              height={36}
-              className="rounded-full"
-            />
-            <span className="font-display text-lg font-semibold text-calm-900">Mantrify</span>
+              <Image
+                src="/images/mantrifyLogo02.png"
+                alt="Go Lightly"
+                width={36}
+                height={36}
+                className="rounded-full"
+              />
+              <span className="font-display text-lg font-semibold text-calm-900">
+                Go Lightly
+              </span>
             </Link>
 
             <nav className="hidden items-center gap-6 md:flex">{navLinks}</nav>
@@ -90,7 +92,7 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
                 onClick={handleAuthClick}
                 className="rounded-full border border-calm-300 px-4 py-2 text-sm font-semibold text-calm-700 transition hover:border-primary-300 hover:text-primary-700"
               >
-                {isAuthenticated ? 'Logout' : 'Login'}
+                {isAuthenticated ? "Logout" : "Login"}
               </button>
             </div>
 
@@ -114,24 +116,28 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
 
       <div
         className={`fixed inset-0 z-40 md:hidden ${
-          isMobileOpen ? 'pointer-events-auto' : 'pointer-events-none'
+          isMobileOpen ? "pointer-events-auto" : "pointer-events-none"
         }`}
       >
         <button
           type="button"
           aria-label="Close navigation menu"
           className={`absolute inset-0 bg-calm-900/35 backdrop-blur-sm transition-opacity ${
-            isMobileOpen ? 'opacity-100' : 'opacity-0'
+            isMobileOpen ? "opacity-100" : "opacity-0"
           }`}
           onClick={handleCloseMobile}
         />
         <div
           className={`absolute left-0 top-0 flex h-full w-3/4 max-w-xs flex-col gap-6 bg-white px-6 py-6 shadow-xl transition-transform ${
-            isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+            isMobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3" onClick={handleCloseMobile}>
+            <Link
+              href="/"
+              className="flex items-center gap-3"
+              onClick={handleCloseMobile}
+            >
               <Image
                 src="/images/mantrifyLogo02.png"
                 alt="Mantrify"
@@ -139,7 +145,9 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
                 height={32}
                 className="rounded-full"
               />
-              <span className="font-display text-base font-semibold text-calm-900">Mantrify</span>
+              <span className="font-display text-base font-semibold text-calm-900">
+                Go Lightly
+              </span>
             </Link>
             <button
               type="button"
@@ -158,7 +166,7 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
             onClick={handleAuthClick}
             className="mt-auto rounded-full border border-calm-300 px-4 py-2 text-sm font-semibold text-calm-700 transition hover:border-primary-300 hover:text-primary-700"
           >
-            {isAuthenticated ? 'Logout' : 'Login'}
+            {isAuthenticated ? "Logout" : "Login"}
           </button>
         </div>
       </div>
@@ -166,5 +174,5 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
         <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
       )}
     </>
-  )
+  );
 }

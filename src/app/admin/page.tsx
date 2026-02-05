@@ -20,7 +20,11 @@ import {
   type QueueRecord,
 } from "@/lib/api/admin";
 import type { Meditation } from "@/store/features/meditationSlice";
-import { deleteSoundFile, getSoundFiles, type SoundFile } from "@/lib/api/sounds";
+import {
+  deleteSoundFile,
+  getSoundFiles,
+  type SoundFile,
+} from "@/lib/api/sounds";
 import { useAppSelector } from "@/store/hooks";
 
 export default function AdminPage() {
@@ -31,25 +35,32 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: "success" | "error";
+  } | null>(null);
   const [isSoundsExpanded, setIsSoundsExpanded] = useState(false);
   const [soundFiles, setSoundFiles] = useState<SoundFile[]>([]);
   const [soundsLoading, setSoundsLoading] = useState(false);
   const [soundsError, setSoundsError] = useState<string | null>(null);
-  const [soundDeleteTarget, setSoundDeleteTarget] = useState<SoundFile | null>(null);
+  const [soundDeleteTarget, setSoundDeleteTarget] = useState<SoundFile | null>(
+    null,
+  );
   const [isSoundDeleting, setIsSoundDeleting] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isMeditationsExpanded, setIsMeditationsExpanded] = useState(false);
   const [meditations, setMeditations] = useState<Meditation[]>([]);
   const [meditationsLoading, setMeditationsLoading] = useState(false);
   const [meditationsError, setMeditationsError] = useState<string | null>(null);
-  const [meditationDeleteTarget, setMeditationDeleteTarget] = useState<Meditation | null>(null);
+  const [meditationDeleteTarget, setMeditationDeleteTarget] =
+    useState<Meditation | null>(null);
   const [isMeditationDeleting, setIsMeditationDeleting] = useState(false);
   const [isQueuerExpanded, setIsQueuerExpanded] = useState(false);
   const [queueRecords, setQueueRecords] = useState<QueueRecord[]>([]);
   const [queueLoading, setQueueLoading] = useState(false);
   const [queueError, setQueueError] = useState<string | null>(null);
-  const [queueDeleteTarget, setQueueDeleteTarget] = useState<QueueRecord | null>(null);
+  const [queueDeleteTarget, setQueueDeleteTarget] =
+    useState<QueueRecord | null>(null);
   const [isQueueDeleting, setIsQueueDeleting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
@@ -64,7 +75,9 @@ export default function AdminPage() {
       if (status === 401 || status === 403) {
         setError("You do not have permission to view users.");
       } else {
-        setError(err?.response?.data?.error?.message || "Unable to load users.");
+        setError(
+          err?.response?.data?.error?.message || "Unable to load users.",
+        );
       }
     } finally {
       setLoading(false);
@@ -83,7 +96,9 @@ export default function AdminPage() {
       if (status === 401 || status === 403) {
         setSoundsError("You do not have permission to view sound files.");
       } else {
-        setSoundsError(err?.response?.data?.error?.message || "Unable to load sound files.");
+        setSoundsError(
+          err?.response?.data?.error?.message || "Unable to load sound files.",
+        );
       }
     } finally {
       setSoundsLoading(false);
@@ -102,7 +117,9 @@ export default function AdminPage() {
       if (status === 401 || status === 403) {
         setMeditationsError("You do not have permission to view meditations.");
       } else {
-        setMeditationsError(err?.response?.data?.error?.message || "Unable to load meditations.");
+        setMeditationsError(
+          err?.response?.data?.error?.message || "Unable to load meditations.",
+        );
       }
     } finally {
       setMeditationsLoading(false);
@@ -121,7 +138,10 @@ export default function AdminPage() {
       if (status === 401 || status === 403) {
         setQueueError("You do not have permission to view queue records.");
       } else {
-        setQueueError(err?.response?.data?.error?.message || "Unable to load queue records.");
+        setQueueError(
+          err?.response?.data?.error?.message ||
+            "Unable to load queue records.",
+        );
       }
     } finally {
       setQueueLoading(false);
@@ -138,9 +158,15 @@ export default function AdminPage() {
   }, [fetchSoundFiles, isSoundsExpanded, soundFiles.length, soundsLoading]);
 
   useEffect(() => {
-    if (!isMeditationsExpanded || meditations.length > 0 || meditationsLoading) return;
+    if (!isMeditationsExpanded || meditations.length > 0 || meditationsLoading)
+      return;
     fetchMeditations();
-  }, [fetchMeditations, isMeditationsExpanded, meditations.length, meditationsLoading]);
+  }, [
+    fetchMeditations,
+    isMeditationsExpanded,
+    meditations.length,
+    meditationsLoading,
+  ]);
 
   useEffect(() => {
     if (!isQueuerExpanded || queueRecords.length > 0 || queueLoading) return;
@@ -150,7 +176,10 @@ export default function AdminPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
     if (deleteTarget.id === user?.id) {
-      setToast({ message: "You cannot delete your own admin account.", variant: "error" });
+      setToast({
+        message: "You cannot delete your own admin account.",
+        variant: "error",
+      });
       setDeleteTarget(null);
       return;
     }
@@ -162,7 +191,8 @@ export default function AdminPage() {
       setToast({ message: "User deleted.", variant: "success" });
       setDeleteTarget(null);
     } catch (err: any) {
-      const message = err?.response?.data?.error?.message || "Unable to delete user.";
+      const message =
+        err?.response?.data?.error?.message || "Unable to delete user.";
       setToast({ message, variant: "error" });
     } finally {
       setIsDeleting(false);
@@ -174,11 +204,14 @@ export default function AdminPage() {
     setIsSoundDeleting(true);
     try {
       await deleteSoundFile(soundDeleteTarget.id);
-      setSoundFiles((prev) => prev.filter((item) => item.id !== soundDeleteTarget.id));
+      setSoundFiles((prev) =>
+        prev.filter((item) => item.id !== soundDeleteTarget.id),
+      );
       setToast({ message: "Sound file deleted.", variant: "success" });
       setSoundDeleteTarget(null);
     } catch (err: any) {
-      const message = err?.response?.data?.error?.message || "Unable to delete sound file.";
+      const message =
+        err?.response?.data?.error?.message || "Unable to delete sound file.";
       setToast({ message, variant: "error" });
     } finally {
       setIsSoundDeleting(false);
@@ -190,11 +223,14 @@ export default function AdminPage() {
     setIsMeditationDeleting(true);
     try {
       await deleteMantra(meditationDeleteTarget.id);
-      setMeditations((prev) => prev.filter((item) => item.id !== meditationDeleteTarget.id));
+      setMeditations((prev) =>
+        prev.filter((item) => item.id !== meditationDeleteTarget.id),
+      );
       setToast({ message: "Meditation deleted.", variant: "success" });
       setMeditationDeleteTarget(null);
     } catch (err: any) {
-      const message = err?.response?.data?.error?.message || "Unable to delete meditation.";
+      const message =
+        err?.response?.data?.error?.message || "Unable to delete meditation.";
       setToast({ message, variant: "error" });
     } finally {
       setIsMeditationDeleting(false);
@@ -206,11 +242,14 @@ export default function AdminPage() {
     setIsQueueDeleting(true);
     try {
       await deleteQueuerRecord(queueDeleteTarget.id);
-      setQueueRecords((prev) => prev.filter((item) => item.id !== queueDeleteTarget.id));
+      setQueueRecords((prev) =>
+        prev.filter((item) => item.id !== queueDeleteTarget.id),
+      );
       setToast({ message: "Queue record deleted.", variant: "success" });
       setQueueDeleteTarget(null);
     } catch (err: any) {
-      const message = err?.response?.data?.error?.message || "Unable to delete queue record.";
+      const message =
+        err?.response?.data?.error?.message || "Unable to delete queue record.";
       setToast({ message, variant: "error" });
     } finally {
       setIsQueueDeleting(false);
@@ -222,12 +261,15 @@ export default function AdminPage() {
       <main className="min-h-screen bg-gradient-to-b from-calm-50 via-white to-primary-50">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:px-8 md:py-16">
           <header className="rounded-3xl border border-calm-200/70 bg-white/80 p-8 shadow-sm backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.25em] text-calm-500">Admin</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-calm-500">
+              Admin
+            </p>
             <h1 className="mt-3 text-3xl font-display font-semibold text-calm-900 md:text-4xl">
-              Manage Mantrify
+              Manage Go Lightly
             </h1>
             <p className="mt-3 max-w-2xl text-base text-calm-600 md:text-lg">
-              Review user accounts, meditation content, sound files, and queued jobs.
+              Review user accounts, meditation content, sound files, and queued
+              jobs.
             </p>
           </header>
 
@@ -239,7 +281,9 @@ export default function AdminPage() {
               aria-expanded={isExpanded}
             >
               <div>
-                <h2 className="text-xl font-display font-semibold text-calm-900">Users</h2>
+                <h2 className="text-xl font-display font-semibold text-calm-900">
+                  Users
+                </h2>
                 <p className="text-sm text-calm-500">Manage registered users</p>
               </div>
               <span className="text-calm-500">
@@ -251,7 +295,11 @@ export default function AdminPage() {
                     stroke="currentColor"
                     strokeWidth="2"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 15l7-7 7 7"
+                    />
                   </svg>
                 ) : (
                   <svg
@@ -261,7 +309,11 @@ export default function AdminPage() {
                     stroke="currentColor"
                     strokeWidth="2"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 )}
               </span>
@@ -315,8 +367,12 @@ export default function AdminPage() {
               aria-expanded={isSoundsExpanded}
             >
               <div>
-                <h2 className="text-xl font-display font-semibold text-calm-900">Sound Files</h2>
-                <p className="text-sm text-calm-500">Upload and manage audio assets</p>
+                <h2 className="text-xl font-display font-semibold text-calm-900">
+                  Sound Files
+                </h2>
+                <p className="text-sm text-calm-500">
+                  Upload and manage audio assets
+                </p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -338,7 +394,11 @@ export default function AdminPage() {
                       stroke="currentColor"
                       strokeWidth="2"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 15l7-7 7 7"
+                      />
                     </svg>
                   ) : (
                     <svg
@@ -348,7 +408,11 @@ export default function AdminPage() {
                       stroke="currentColor"
                       strokeWidth="2"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   )}
                 </span>
@@ -402,8 +466,12 @@ export default function AdminPage() {
               aria-expanded={isMeditationsExpanded}
             >
               <div>
-                <h2 className="text-xl font-display font-semibold text-calm-900">Meditations</h2>
-                <p className="text-sm text-calm-500">Review all meditation content</p>
+                <h2 className="text-xl font-display font-semibold text-calm-900">
+                  Meditations
+                </h2>
+                <p className="text-sm text-calm-500">
+                  Review all meditation content
+                </p>
               </div>
               <span className="text-calm-500">
                 {isMeditationsExpanded ? (
@@ -414,7 +482,11 @@ export default function AdminPage() {
                     stroke="currentColor"
                     strokeWidth="2"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 15l7-7 7 7"
+                    />
                   </svg>
                 ) : (
                   <svg
@@ -424,7 +496,11 @@ export default function AdminPage() {
                     stroke="currentColor"
                     strokeWidth="2"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 )}
               </span>
@@ -477,8 +553,12 @@ export default function AdminPage() {
               aria-expanded={isQueuerExpanded}
             >
               <div>
-                <h2 className="text-xl font-display font-semibold text-calm-900">Queuer</h2>
-                <p className="text-sm text-calm-500">Monitor queued meditation jobs</p>
+                <h2 className="text-xl font-display font-semibold text-calm-900">
+                  Queuer
+                </h2>
+                <p className="text-sm text-calm-500">
+                  Monitor queued meditation jobs
+                </p>
               </div>
               <span className="text-calm-500">
                 {isQueuerExpanded ? (
@@ -489,7 +569,11 @@ export default function AdminPage() {
                     stroke="currentColor"
                     strokeWidth="2"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 15l7-7 7 7"
+                    />
                   </svg>
                 ) : (
                   <svg
@@ -499,7 +583,11 @@ export default function AdminPage() {
                     stroke="currentColor"
                     strokeWidth="2"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 )}
               </span>
@@ -555,7 +643,13 @@ export default function AdminPage() {
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}
       />
-      {toast && <Toast message={toast.message} variant={toast.variant} onClose={() => setToast(null)} />}
+      {toast && (
+        <Toast
+          message={toast.message}
+          variant={toast.variant}
+          onClose={() => setToast(null)}
+        />
+      )}
       <ModalUploadSoundFile
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
