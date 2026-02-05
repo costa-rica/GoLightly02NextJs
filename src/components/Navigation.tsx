@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/features/authSlice";
 import { clearAuthStorage } from "@/lib/utils/auth";
@@ -16,9 +16,12 @@ type NavigationProps = {
 export default function Navigation({ onLoginClick }: NavigationProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const isAdminPage = pathname?.startsWith("/admin");
 
   useEffect(() => {
     if (!isMobileOpen) return;
@@ -45,16 +48,34 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
 
   const handleCloseMobile = () => setIsMobileOpen(false);
 
-  const navLinks = (
-    <>
-      <Link
-        href="/"
-        className="text-sm font-semibold text-calm-700 hover:text-primary-700 transition"
-        onClick={handleCloseMobile}
-      >
-        Home
-      </Link>
-      {user?.isAdmin && (
+  // Determine what navigation links to show
+  const getNavLinks = () => {
+    // Not logged in: no nav links
+    if (!isAuthenticated) {
+      return null;
+    }
+
+    // Logged in, not admin, on homepage: no nav links
+    if (!user?.isAdmin && !isAdminPage) {
+      return null;
+    }
+
+    // Logged in as admin on admin page: show Home
+    if (user?.isAdmin && isAdminPage) {
+      return (
+        <Link
+          href="/"
+          className="text-sm font-semibold text-calm-700 hover:text-primary-700 transition"
+          onClick={handleCloseMobile}
+        >
+          Home
+        </Link>
+      );
+    }
+
+    // Logged in as admin on homepage: show Admin
+    if (user?.isAdmin && !isAdminPage) {
+      return (
         <Link
           href="/admin"
           className="text-sm font-semibold text-calm-700 hover:text-primary-700 transition"
@@ -62,9 +83,13 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
         >
           Admin
         </Link>
-      )}
-    </>
-  );
+      );
+    }
+
+    return null;
+  };
+
+  const navLinks = getNavLinks();
 
   return (
     <>
@@ -84,9 +109,8 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
               </span>
             </Link>
 
-            <nav className="hidden items-center gap-6 md:flex">{navLinks}</nav>
-
-            <div className="hidden items-center md:flex">
+            <div className="hidden items-center gap-3 md:flex">
+              {navLinks}
               <button
                 type="button"
                 onClick={handleAuthClick}
@@ -159,7 +183,9 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
             </button>
           </div>
 
-          <nav className="flex flex-col gap-4">{navLinks}</nav>
+          {navLinks && (
+            <nav className="flex flex-col gap-4">{navLinks}</nav>
+          )}
 
           <button
             type="button"
