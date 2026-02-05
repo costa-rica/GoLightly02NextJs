@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import ModalLogin from '@/components/modals/ModalLogin'
 import ModalRegister from '@/components/modals/ModalRegister'
@@ -14,6 +14,22 @@ export default function AppShell({ children }: AppShellProps) {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const wantsLogin = searchParams.get('login') === '1'
+    const wantsRegister = searchParams.get('register') === '1'
+
+    if (wantsLogin) {
+      setIsRegisterOpen(false)
+      setIsLoginOpen(true)
+    }
+
+    if (wantsRegister) {
+      setIsLoginOpen(false)
+      setIsRegisterOpen(true)
+    }
+  }, [searchParams])
 
   return (
     <>

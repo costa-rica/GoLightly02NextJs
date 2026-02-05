@@ -485,50 +485,50 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 10.1 Email Verification
 
-- [ ] Create `src/app/verify/page.tsx`
-- [ ] Extract token from URL query parameter
-- [ ] Call `GET /users/verify?token=...` on page load
-- [ ] Show success message if verified
-- [ ] Show error message if token is invalid/expired
-- [ ] Provide link to request new verification email
-- [ ] Redirect to login after successful verification
+- [x] Create `src/app/verify/page.tsx`
+- [x] Extract token from URL query parameter
+- [x] Call `GET /users/verify?token=...` on page load
+- [x] Show success message if verified
+- [x] Show error message if token is invalid/expired
+- [x] Provide link to request new verification email
+- [x] Redirect to login after successful verification
 
 ### 10.2 Forgot Password Page
 
-- [ ] Create `src/app/forgot-password/page.tsx`
-- [ ] Add email input field
-- [ ] Add submit button
-- [ ] Connect to `POST /users/forgot-password` endpoint
-- [ ] Show success message: "Password reset link sent to email"
-- [ ] Handle 404 error (email not found)
-- [ ] Provide link back to login
+- [x] Create `src/app/forgot-password/page.tsx`
+- [x] Add email input field
+- [x] Add submit button
+- [x] Connect to `POST /users/forgot-password` endpoint
+- [x] Show success message: "Password reset link sent to email"
+- [x] Handle 404 error (email not found)
+- [x] Provide link back to login
 
 ### 10.3 Reset Password Page
 
-- [ ] Create `src/app/reset-password/[token]/page.tsx`
-- [ ] Extract token from URL parameter
-- [ ] Add new password input field
-- [ ] Add confirm password input field
-- [ ] Validate passwords match and meet requirements
-- [ ] Connect to `POST /users/reset-password` endpoint
-- [ ] Show success message and redirect to login
-- [ ] Handle 401 (expired token) and show link to request new reset
+- [x] Create `src/app/reset-password/[token]/page.tsx`
+- [x] Extract token from URL parameter
+- [x] Add new password input field
+- [x] Add confirm password input field
+- [x] Validate passwords match and meet requirements
+- [x] Connect to `POST /users/reset-password` endpoint
+- [x] Show success message and redirect to login
+- [x] Handle 401 (expired token) and show link to request new reset
 
 ### 10.4 Token Persistence
 
-- [ ] Store JWT token in Redux state
-- [ ] Persist auth state with redux-persist (localStorage)
-- [ ] Restore auth state on app initialization
+- [x] Store JWT token in Redux state
+- [x] Persist auth state with redux-persist (localStorage)
+- [x] Restore auth state on app initialization
 - [ ] Implement token refresh logic if needed
-- [ ] Clear token on logout
+- [x] Clear token on logout
 
 ### 10.5 Logout Functionality
 
-- [ ] Add logout button in navigation
-- [ ] On click: clear Redux auth state
-- [ ] Clear persisted storage
-- [ ] Redirect to homepage
-- [ ] Show logout success message
+- [x] Add logout button in navigation
+- [x] On click: clear Redux auth state
+- [x] Clear persisted storage
+- [x] Redirect to homepage
+- [x] Show logout success message
 
 ---
 

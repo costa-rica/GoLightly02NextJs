@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { logout } from '@/store/features/authSlice'
+import { clearAuthStorage } from '@/lib/utils/auth'
+import Toast from '@/components/Toast'
 
 type NavigationProps = {
   onLoginClick?: () => void
@@ -12,8 +15,10 @@ type NavigationProps = {
 
 export default function Navigation({ onLoginClick }: NavigationProps) {
   const dispatch = useAppDispatch()
+  const router = useRouter()
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isMobileOpen) return
@@ -27,6 +32,9 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
   const handleAuthClick = () => {
     if (isAuthenticated) {
       dispatch(logout())
+      clearAuthStorage()
+      setToastMessage('You have been logged out.')
+      router.push('/')
       setIsMobileOpen(false)
       return
     }
@@ -59,10 +67,11 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
   )
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
-      <div className="bg-white/80 backdrop-blur border-b border-calm-200/70 shadow-sm">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
-          <Link href="/" className="flex items-center gap-3">
+    <>
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div className="bg-white/80 backdrop-blur border-b border-calm-200/70 shadow-sm">
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
+            <Link href="/" className="flex items-center gap-3">
             <Image
               src="/images/mantrifyLogo02.png"
               alt="Mantrify"
@@ -71,36 +80,37 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
               className="rounded-full"
             />
             <span className="font-display text-lg font-semibold text-calm-900">Mantrify</span>
-          </Link>
+            </Link>
 
-          <nav className="hidden items-center gap-6 md:flex">{navLinks}</nav>
+            <nav className="hidden items-center gap-6 md:flex">{navLinks}</nav>
 
-          <div className="hidden items-center md:flex">
+            <div className="hidden items-center md:flex">
+              <button
+                type="button"
+                onClick={handleAuthClick}
+                className="rounded-full border border-calm-300 px-4 py-2 text-sm font-semibold text-calm-700 transition hover:border-primary-300 hover:text-primary-700"
+              >
+                {isAuthenticated ? 'Logout' : 'Login'}
+              </button>
+            </div>
+
             <button
               type="button"
-              onClick={handleAuthClick}
-              className="rounded-full border border-calm-300 px-4 py-2 text-sm font-semibold text-calm-700 transition hover:border-primary-300 hover:text-primary-700"
+              className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full border border-calm-200 text-calm-700 transition hover:border-primary-300 hover:text-primary-700"
+              aria-label="Open navigation menu"
+              aria-expanded={isMobileOpen}
+              onClick={() => setIsMobileOpen(true)}
             >
-              {isAuthenticated ? 'Logout' : 'Login'}
+              <span className="sr-only">Open menu</span>
+              <div className="flex flex-col gap-1">
+                <span className="h-0.5 w-5 rounded-full bg-current" />
+                <span className="h-0.5 w-5 rounded-full bg-current" />
+                <span className="h-0.5 w-5 rounded-full bg-current" />
+              </div>
             </button>
           </div>
-
-          <button
-            type="button"
-            className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full border border-calm-200 text-calm-700 transition hover:border-primary-300 hover:text-primary-700"
-            aria-label="Open navigation menu"
-            aria-expanded={isMobileOpen}
-            onClick={() => setIsMobileOpen(true)}
-          >
-            <span className="sr-only">Open menu</span>
-            <div className="flex flex-col gap-1">
-              <span className="h-0.5 w-5 rounded-full bg-current" />
-              <span className="h-0.5 w-5 rounded-full bg-current" />
-              <span className="h-0.5 w-5 rounded-full bg-current" />
-            </div>
-          </button>
         </div>
-      </div>
+      </header>
 
       <div
         className={`fixed inset-0 z-40 md:hidden ${
@@ -152,6 +162,9 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
           </button>
         </div>
       </div>
-    </header>
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+      )}
+    </>
   )
 }

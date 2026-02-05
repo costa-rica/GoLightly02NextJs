@@ -85,7 +85,7 @@ export const canAccessRoute = (
   token: string | null
 ): boolean => {
   // Public routes
-  const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/verify'];
+  const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/verify', '/reset-password'];
   if (publicRoutes.includes(route)) return true;
 
   // Admin routes require authentication and admin status
