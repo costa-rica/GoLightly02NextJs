@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setMeditations } from "@/store/features/meditationSlice";
 import { getAllMantras } from "@/lib/api/mantras";
 import { validateMeditationTitle, validatePauseDuration, validateSpeed } from "@/lib/utils/validation";
+import ModalConfirmCreateMeditation from "@/components/modals/ModalConfirmCreateMeditation";
 
 export default function CreateMeditationForm() {
   const dispatch = useAppDispatch();
@@ -39,6 +40,7 @@ export default function CreateMeditationForm() {
   const [soundsError, setSoundsError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const maxDescriptionLength = 300;
 
   useEffect(() => {
@@ -140,17 +142,8 @@ export default function CreateMeditationForm() {
 
   const submitEnabled = useMemo(() => !isSubmitting && rows.length > 0, [isSubmitting, rows.length]);
 
-  const handleSubmit = async () => {
-    const titleValidation = validateMeditationTitle(title);
-    const nextErrors: { title?: string; description?: string } = {};
-    if (!titleValidation.valid) {
-      nextErrors.title = titleValidation.message;
-    }
-    if (description.length > maxDescriptionLength) {
-      nextErrors.description = `Description must be ${maxDescriptionLength} characters or less`;
-    }
-    setErrors(nextErrors);
-
+  const handleOpenModal = () => {
+    // Validate rows before opening modal
     const nextRowErrors: typeof rowErrors = {};
     rows.forEach((row) => {
       const rowError: RowError = {};
@@ -185,7 +178,25 @@ export default function CreateMeditationForm() {
     });
     setRowErrors(nextRowErrors);
 
-    if (Object.keys(nextErrors).length > 0 || Object.keys(nextRowErrors).length > 0) {
+    // Only open modal if no row errors
+    if (Object.keys(nextRowErrors).length === 0) {
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleSubmit = async () => {
+    // Validate title and description
+    const titleValidation = validateMeditationTitle(title);
+    const nextErrors: { title?: string; description?: string } = {};
+    if (!titleValidation.valid) {
+      nextErrors.title = titleValidation.message;
+    }
+    if (description.length > maxDescriptionLength) {
+      nextErrors.description = `Description must be ${maxDescriptionLength} characters or less`;
+    }
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
       return;
     }
 
@@ -227,11 +238,38 @@ export default function CreateMeditationForm() {
       setRows([]);
       setRowErrors({});
       setIsExpanded(false);
+      setIsModalOpen(false);
     } catch (err: any) {
       const message = err?.response?.data?.error?.message || "Unable to submit meditation.";
       setToast({ message, variant: "error" });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleTitleBlur = () => {
+    const result = validateMeditationTitle(title);
+    if (!result.valid) {
+      setErrors((prev) => ({ ...prev, title: result.message }));
+    }
+  };
+
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+    if (errors.title) {
+      setErrors((prev) => ({ ...prev, title: undefined }));
+    }
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setDescription(value);
+    if (value.length > maxDescriptionLength) {
+      setErrors((prev) => ({
+        ...prev,
+        description: `Description must be ${maxDescriptionLength} characters or less`,
+      }));
+    } else if (errors.description) {
+      setErrors((prev) => ({ ...prev, description: undefined }));
     }
   };
 
@@ -279,88 +317,7 @@ export default function CreateMeditationForm() {
 
       {isExpanded && (
         <div className="rounded-3xl border border-dashed border-calm-200 bg-white/70 p-6 shadow-sm">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="md:col-span-2">
-              <label className="text-sm font-semibold text-calm-700" htmlFor="meditation-title">
-                Title
-              </label>
-              <input
-                id="meditation-title"
-                type="text"
-                value={title}
-                onChange={(event) => {
-                  setTitle(event.target.value);
-                  if (errors.title) {
-                    setErrors((prev) => ({ ...prev, title: undefined }));
-                  }
-                }}
-                onBlur={() => {
-                  const result = validateMeditationTitle(title);
-                  if (!result.valid) {
-                    setErrors((prev) => ({ ...prev, title: result.message }));
-                  }
-                }}
-                className={`mt-2 w-full rounded-2xl border px-4 py-3 text-sm text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
-                  errors.title ? "border-red-300" : "border-calm-200"
-                }`}
-                placeholder="Evening clarity"
-              />
-              {errors.title && <p className="mt-2 text-xs text-red-500">{errors.title}</p>}
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="text-sm font-semibold text-calm-700" htmlFor="meditation-description">
-                Description (optional)
-              </label>
-              <textarea
-                id="meditation-description"
-                rows={3}
-                value={description}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-                  setDescription(nextValue);
-                  if (nextValue.length > maxDescriptionLength) {
-                    setErrors((prev) => ({
-                      ...prev,
-                      description: `Description must be ${maxDescriptionLength} characters or less`,
-                    }));
-                  } else if (errors.description) {
-                    setErrors((prev) => ({ ...prev, description: undefined }));
-                  }
-                }}
-                className={`mt-2 w-full rounded-2xl border px-4 py-3 text-sm text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
-                  errors.description ? "border-red-300" : "border-calm-200"
-                }`}
-                placeholder="Set an intention for the day with gentle pauses."
-              />
-              <div className="mt-2 flex items-center justify-between text-xs text-calm-500">
-                <span>{errors.description || "Keep it concise and helpful."}</span>
-                <span>
-                  {description.length}/{maxDescriptionLength}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-semibold text-calm-700" htmlFor="meditation-visibility">
-                Visibility
-              </label>
-              <select
-                id="meditation-visibility"
-                value={visibility}
-                onChange={(event) => setVisibility(event.target.value as "public" | "private")}
-                className="mt-2 w-full rounded-2xl border border-calm-200 bg-white px-4 py-3 text-sm text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100"
-              >
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
-              <p className="mt-2 text-xs text-calm-500">
-                Private meditations are only visible to you.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8">
+          <div>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-display font-semibold text-calm-900">Meditation Rows</h3>
               <button
@@ -565,15 +522,34 @@ export default function CreateMeditationForm() {
           <div className="mt-8 flex items-center justify-end">
             <button
               type="button"
-              onClick={handleSubmit}
+              onClick={handleOpenModal}
               disabled={!submitEnabled}
               className="rounded-full bg-primary-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-primary-200"
             >
-              {isSubmitting ? "Submitting..." : "Submit"}
+              Submit
             </button>
           </div>
         </div>
       )}
+
+      <ModalConfirmCreateMeditation
+        isOpen={isModalOpen}
+        rows={rows}
+        soundFiles={soundFiles}
+        title={title}
+        description={description}
+        visibility={visibility}
+        errors={errors}
+        isSubmitting={isSubmitting}
+        maxDescriptionLength={maxDescriptionLength}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleSubmit}
+        onTitleChange={handleTitleChange}
+        onDescriptionChange={handleDescriptionChange}
+        onVisibilityChange={setVisibility}
+        onTitleBlur={handleTitleBlur}
+      />
+
       {toast && (
         <Toast message={toast.message} variant={toast.variant} onClose={() => setToast(null)} />
       )}
