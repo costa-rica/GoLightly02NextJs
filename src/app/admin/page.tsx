@@ -191,30 +191,20 @@ export default function AdminPage() {
   }, [fetchUsers]);
 
   useEffect(() => {
-    if (!isSoundsExpanded || soundFiles.length > 0 || soundsLoading) return;
     fetchSoundFiles();
-  }, [fetchSoundFiles, isSoundsExpanded, soundFiles.length, soundsLoading]);
+  }, [fetchSoundFiles]);
 
   useEffect(() => {
-    if (!isMeditationsExpanded || meditations.length > 0 || meditationsLoading)
-      return;
     fetchMeditations();
-  }, [
-    fetchMeditations,
-    isMeditationsExpanded,
-    meditations.length,
-    meditationsLoading,
-  ]);
+  }, [fetchMeditations]);
 
   useEffect(() => {
-    if (!isQueuerExpanded || queueRecords.length > 0 || queueLoading) return;
     fetchQueuerRecords();
-  }, [fetchQueuerRecords, isQueuerExpanded, queueRecords.length, queueLoading]);
+  }, [fetchQueuerRecords]);
 
   useEffect(() => {
-    if (!isDatabaseExpanded || backups.length > 0 || databaseLoading) return;
     fetchBackups();
-  }, [fetchBackups, isDatabaseExpanded, backups.length, databaseLoading]);
+  }, [fetchBackups]);
 
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
@@ -383,19 +373,20 @@ export default function AdminPage() {
           </header>
 
           <section className="space-y-4">
-            <button
-              type="button"
-              onClick={() => setIsExpanded((prev) => !prev)}
-              className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
-              aria-expanded={isExpanded}
-            >
+            <div className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm">
               <div>
                 <h2 className="text-xl font-display font-semibold text-calm-900">
                   Users
                 </h2>
                 <p className="text-sm text-calm-500">Manage registered users</p>
               </div>
-              <span className="text-calm-500">
+              <button
+                type="button"
+                onClick={() => setIsExpanded((prev) => !prev)}
+                className="text-calm-500 transition hover:text-primary-700"
+                aria-expanded={isExpanded}
+                aria-label="Toggle users"
+              >
                 {isExpanded ? (
                   <svg
                     className="h-5 w-5"
@@ -425,8 +416,8 @@ export default function AdminPage() {
                     />
                   </svg>
                 )}
-              </span>
-            </button>
+              </button>
+            </div>
 
             {isExpanded && (
               <div className="rounded-3xl border border-calm-200/70 bg-white p-4 shadow-sm md:p-6">
@@ -469,12 +460,7 @@ export default function AdminPage() {
           </section>
 
           <section className="space-y-4">
-            <button
-              type="button"
-              onClick={() => setIsSoundsExpanded((prev) => !prev)}
-              className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
-              aria-expanded={isSoundsExpanded}
-            >
+            <div className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm">
               <div>
                 <h2 className="text-xl font-display font-semibold text-calm-900">
                   Sound Files
@@ -494,41 +480,45 @@ export default function AdminPage() {
                 >
                   Upload Sound File
                 </button>
-                {(soundFiles.length > 0 || soundsLoading) && (
-                  <span className="text-calm-500">
-                    {isSoundsExpanded ? (
-                      <svg
-                        className="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 15l7-7 7 7"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setIsSoundsExpanded((prev) => !prev)}
+                  className="text-calm-500 transition hover:text-primary-700"
+                  aria-expanded={isSoundsExpanded}
+                  aria-label="Toggle sound files"
+                >
+                  {isSoundsExpanded ? (
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 15l7-7 7 7"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  )}
+                </button>
               </div>
-            </button>
+            </div>
 
             {isSoundsExpanded && (
               <div className="rounded-3xl border border-calm-200/70 bg-white p-4 shadow-sm md:p-6">
@@ -570,12 +560,7 @@ export default function AdminPage() {
           </section>
 
           <section className="space-y-4">
-            <button
-              type="button"
-              onClick={() => setIsMeditationsExpanded((prev) => !prev)}
-              className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
-              aria-expanded={isMeditationsExpanded}
-            >
+            <div className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm">
               <div>
                 <h2 className="text-xl font-display font-semibold text-calm-900">
                   Meditations
@@ -584,40 +569,44 @@ export default function AdminPage() {
                   Review all meditation content
                 </p>
               </div>
-              {(meditations.length > 0 || meditationsLoading) && (
-                <span className="text-calm-500">
-                  {isMeditationsExpanded ? (
-                    <svg
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 15l7-7 7 7"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  )}
-                </span>
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => setIsMeditationsExpanded((prev) => !prev)}
+                className="text-calm-500 transition hover:text-primary-700"
+                aria-expanded={isMeditationsExpanded}
+                aria-label="Toggle meditations"
+              >
+                {isMeditationsExpanded ? (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
 
             {isMeditationsExpanded && (
               <div className="rounded-3xl border border-calm-200/70 bg-white p-4 shadow-sm md:p-6">
@@ -659,12 +648,7 @@ export default function AdminPage() {
           </section>
 
           <section className="space-y-4">
-            <button
-              type="button"
-              onClick={() => setIsQueuerExpanded((prev) => !prev)}
-              className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
-              aria-expanded={isQueuerExpanded}
-            >
+            <div className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm">
               <div>
                 <h2 className="text-xl font-display font-semibold text-calm-900">
                   Queuer
@@ -673,40 +657,44 @@ export default function AdminPage() {
                   Monitor queued meditation jobs
                 </p>
               </div>
-              {(queueRecords.length > 0 || queueLoading) && (
-                <span className="text-calm-500">
-                  {isQueuerExpanded ? (
-                    <svg
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 15l7-7 7 7"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  )}
-                </span>
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => setIsQueuerExpanded((prev) => !prev)}
+                className="text-calm-500 transition hover:text-primary-700"
+                aria-expanded={isQueuerExpanded}
+                aria-label="Toggle queuer"
+              >
+                {isQueuerExpanded ? (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
 
             {isQueuerExpanded && (
               <div className="rounded-3xl border border-calm-200/70 bg-white p-4 shadow-sm md:p-6">
@@ -748,12 +736,7 @@ export default function AdminPage() {
           </section>
 
           <section className="space-y-4">
-            <button
-              type="button"
-              onClick={() => setIsDatabaseExpanded((prev) => !prev)}
-              className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
-              aria-expanded={isDatabaseExpanded}
-            >
+            <div className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm">
               <div>
                 <h2 className="text-xl font-display font-semibold text-calm-900">
                   Database
@@ -765,49 +748,50 @@ export default function AdminPage() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleCreateBackup();
-                  }}
+                  onClick={handleCreateBackup}
                   className="rounded-full border border-primary-200 px-4 py-2 text-xs font-semibold text-primary-700 transition hover:border-primary-300"
                 >
                   Create Backup
                 </button>
-                {(backups.length > 0 || databaseLoading) && (
-                  <span className="text-calm-500">
-                    {isDatabaseExpanded ? (
-                      <svg
-                        className="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 15l7-7 7 7"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setIsDatabaseExpanded((prev) => !prev)}
+                  className="text-calm-500 transition hover:text-primary-700"
+                  aria-expanded={isDatabaseExpanded}
+                  aria-label="Toggle database backups"
+                >
+                  {isDatabaseExpanded ? (
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 15l7-7 7 7"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  )}
+                </button>
               </div>
-            </button>
+            </div>
 
             {isDatabaseExpanded && (
               <div className="rounded-3xl border border-calm-200/70 bg-white p-4 shadow-sm md:p-6">
