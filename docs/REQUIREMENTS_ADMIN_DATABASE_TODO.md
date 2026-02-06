@@ -5,20 +5,20 @@ This document outlines the tasks needed to implement database backup management 
 ## Phase 1: API Client Functions
 
 ### Task 1.1: Create database API client
-- [ ] Create `src/lib/api/database.ts`
-- [ ] Add TypeScript interfaces for API responses:
+- [x] Create `src/lib/api/database.ts`
+- [x] Add TypeScript interfaces for API responses:
   - `BackupFile` interface (filename, size, sizeFormatted, createdAt)
   - `GetBackupsResponse` interface (backups array, count)
   - `CreateBackupResponse` interface
   - `DeleteBackupResponse` interface
   - `RestoreDatabaseResponse` interface
-- [ ] Implement `getBackupsList()` - GET /database/backups-list
-- [ ] Implement `createBackup()` - POST /database/create-backup
-- [ ] Implement `downloadBackup(filename)` - GET /database/download-backup/:filename
+- [x] Implement `getBackupsList()` - GET /database/backups-list
+- [x] Implement `createBackup()` - POST /database/create-backup
+- [x] Implement `downloadBackup(filename)` - GET /database/download-backup/:filename
   - Return blob for file download
   - Handle browser download trigger
-- [ ] Implement `deleteBackup(filename)` - DELETE /database/delete-backup/:filename
-- [ ] Implement `replenishDatabase(file)` - POST /database/replenish-database
+- [x] Implement `deleteBackup(filename)` - DELETE /database/delete-backup/:filename
+- [x] Implement `replenishDatabase(file)` - POST /database/replenish-database
   - Use FormData for file upload
   - Set appropriate headers for multipart/form-data
 
