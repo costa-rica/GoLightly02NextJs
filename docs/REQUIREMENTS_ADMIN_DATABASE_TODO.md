@@ -25,20 +25,20 @@ This document outlines the tasks needed to implement database backup management 
 ## Phase 2: Table Component
 
 ### Task 2.1: Create TableAdminDatabase component
-- [ ] Create `src/components/tables/TableAdminDatabase.tsx`
-- [ ] Component props:
+- [x] Create `src/components/tables/TableAdminDatabase.tsx`
+- [x] Component props:
   - `backups: BackupFile[]`
   - `onDownload: (filename: string) => void`
   - `onDelete: (filename: string) => void`
-- [ ] Table structure:
+- [x] Table structure:
   - Column 1: Filename (as clickable link/button)
   - Column 2: Size (formatted, e.g., "1.02 MB")
   - Column 3: Created Date (formatted timestamp)
   - Column 4: Delete button (red "X")
-- [ ] Style filename as hyperlink with hover effect
-- [ ] Style delete button as red "X" with hover effect
-- [ ] Handle empty state ("No backups available")
-- [ ] Make responsive for small screens
+- [x] Style filename as hyperlink with hover effect
+- [x] Style delete button as red "X" with hover effect
+- [x] Handle empty state ("No backups available")
+- [x] Make responsive for small screens
 
 ## Phase 3: Admin Page Integration
 
