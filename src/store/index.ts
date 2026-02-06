@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './features/authSlice';
 import meditationReducer from './features/meditationSlice';
+import uiReducer from './features/uiSlice';
 
 // Redux persist configuration
 const persistConfig = {
@@ -15,6 +16,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   meditation: meditationReducer,
+  ui: uiReducer,
 });
 
 // Create persisted reducer

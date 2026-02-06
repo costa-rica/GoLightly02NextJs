@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import ModalLogin from '@/components/modals/ModalLogin'
 import ModalRegister from '@/components/modals/ModalRegister'
+import LoadingOverlay from '@/components/LoadingOverlay'
 
 type AppShellProps = {
   children: React.ReactNode
@@ -55,6 +56,7 @@ export default function AppShell({ children }: AppShellProps) {
           setIsLoginOpen(true)
         }}
       />
+      <LoadingOverlay />
     </>
   )
 }
