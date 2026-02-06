@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import TableAdminUsers from "@/components/tables/TableAdminUsers";
 import TableAdminSoundsFiles from "@/components/tables/TableAdminSoundsFiles";
@@ -27,12 +27,18 @@ import {
   type SoundFile,
 } from "@/lib/api/sounds";
 import {
+  createBackup,
+  deleteBackup,
+  downloadBackup,
   getBackupsList,
+  replenishDatabase,
   type BackupFile,
 } from "@/lib/api/database";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { hideLoading, showLoading } from "@/store/features/uiSlice";
 
 export default function AdminPage() {
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const [isExpanded, setIsExpanded] = useState(true);
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -72,6 +78,7 @@ export default function AdminPage() {
   const [databaseLoading, setDatabaseLoading] = useState(false);
   const [databaseError, setDatabaseError] = useState<string | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -292,17 +299,71 @@ export default function AdminPage() {
     }
   };
 
-  const handleCreateBackup = () => {};
-
-  const handleDownloadBackup = (filename: string) => {
-    void filename;
+  const handleCreateBackup = async () => {
+    dispatch(showLoading("Creating database backup..."));
+    try {
+      await createBackup();
+      await fetchBackups();
+      setToast({ message: "Database backup created.", variant: "success" });
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.error?.message ||
+        "Unable to create database backup.";
+      setToast({ message, variant: "error" });
+    } finally {
+      dispatch(hideLoading());
+    }
   };
 
-  const handleDeleteBackup = (filename: string) => {
-    void filename;
+  const handleDownloadBackup = async (filename: string) => {
+    dispatch(showLoading("Downloading backup..."));
+    try {
+      await downloadBackup(filename);
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.error?.message || "Unable to download backup.";
+      setToast({ message, variant: "error" });
+    } finally {
+      dispatch(hideLoading());
+    }
   };
 
-  const handleRestoreDatabase = () => {};
+  const handleDeleteBackup = async (filename: string) => {
+    try {
+      await deleteBackup(filename);
+      setBackups((prev) => prev.filter((item) => item.filename !== filename));
+      setToast({ message: "Backup deleted.", variant: "success" });
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.error?.message || "Unable to delete backup.";
+      setToast({ message, variant: "error" });
+    }
+  };
+
+  const handleRestoreDatabase = async () => {
+    if (!uploadFile) return;
+    dispatch(showLoading("Restoring database..."));
+    try {
+      const response = await replenishDatabase(uploadFile);
+      setUploadFile(null);
+      if (uploadInputRef.current) {
+        uploadInputRef.current.value = "";
+      }
+      const tablesImported = response.tablesImported ?? 0;
+      const totalRows = response.totalRows ?? 0;
+      setToast({
+        message: `Database restored. ${tablesImported} tables, ${totalRows} rows.`,
+        variant: "success",
+      });
+      await fetchBackups();
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.error?.message || "Unable to restore database.";
+      setToast({ message, variant: "error" });
+    } finally {
+      dispatch(hideLoading());
+    }
+  };
 
   return (
     <ProtectedRoute requireAdmin>
@@ -802,6 +863,7 @@ export default function AdminPage() {
                               type="file"
                               accept=".zip"
                               className="sr-only"
+                              ref={uploadInputRef}
                               onChange={(event) => {
                                 const file = event.target.files?.[0] || null;
                                 setUploadFile(file);

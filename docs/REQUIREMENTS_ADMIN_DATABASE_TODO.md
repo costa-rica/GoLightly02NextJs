@@ -88,44 +88,44 @@ This document outlines the tasks needed to implement database backup management 
 ## Phase 4: Action Handlers
 
 ### Task 4.1: Implement handleCreateBackup
-- [ ] Show LoadingOverlay with message "Creating database backup..."
-- [ ] Call `createBackup()` API
-- [ ] On success:
+- [x] Show LoadingOverlay with message "Creating database backup..."
+- [x] Call `createBackup()` API
+- [x] On success:
   - Refresh backups list
   - Show success Toast
   - Hide LoadingOverlay
-- [ ] On error:
+- [x] On error:
   - Show error Toast
   - Hide LoadingOverlay
 
 ### Task 4.2: Implement handleDownload
-- [ ] Show LoadingOverlay with message "Downloading backup..."
-- [ ] Call `downloadBackup(filename)` API
-- [ ] Trigger browser download using blob URL
-- [ ] Create temporary anchor element and click it
-- [ ] Cleanup blob URL after download
-- [ ] Hide LoadingOverlay
-- [ ] On error:
+- [x] Show LoadingOverlay with message "Downloading backup..."
+- [x] Call `downloadBackup(filename)` API
+- [x] Trigger browser download using blob URL
+- [x] Create temporary anchor element and click it
+- [x] Cleanup blob URL after download
+- [x] Hide LoadingOverlay
+- [x] On error:
   - Show error Toast
   - Hide LoadingOverlay
 
 ### Task 4.3: Implement handleDelete
-- [ ] Call `deleteBackup(filename)` API (no confirmation)
-- [ ] On success:
+- [x] Call `deleteBackup(filename)` API (no confirmation)
+- [x] On success:
   - Remove backup from local state
   - Show success Toast
-- [ ] On error:
+- [x] On error:
   - Show error Toast
 
 ### Task 4.4: Implement handleRestoreDatabase
-- [ ] Show LoadingOverlay with message "Restoring database..."
-- [ ] Call `replenishDatabase(uploadFile)` API
-- [ ] On success:
+- [x] Show LoadingOverlay with message "Restoring database..."
+- [x] Call `replenishDatabase(uploadFile)` API
+- [x] On success:
   - Clear file input
   - Show success Toast with row counts
   - Refresh backups list
   - Hide LoadingOverlay
-- [ ] On error:
+- [x] On error:
   - Show error Toast
   - Hide LoadingOverlay
 
