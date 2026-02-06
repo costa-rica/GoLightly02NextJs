@@ -6,6 +6,7 @@ import TableAdminUsers from "@/components/tables/TableAdminUsers";
 import TableAdminSoundsFiles from "@/components/tables/TableAdminSoundsFiles";
 import TableAdminMeditations from "@/components/tables/TableAdminMeditations";
 import TableAdminQueuer from "@/components/tables/TableAdminQueuer";
+import TableAdminDatabase from "@/components/tables/TableAdminDatabase";
 import ModalUploadSoundFile from "@/components/modals/ModalUploadSoundFile";
 import ModalConfirmDelete from "@/components/modals/ModalConfirmDelete";
 import Toast from "@/components/Toast";
@@ -25,6 +26,10 @@ import {
   getSoundFiles,
   type SoundFile,
 } from "@/lib/api/sounds";
+import {
+  getBackupsList,
+  type BackupFile,
+} from "@/lib/api/database";
 import { useAppSelector } from "@/store/hooks";
 
 export default function AdminPage() {
@@ -62,6 +67,11 @@ export default function AdminPage() {
   const [queueDeleteTarget, setQueueDeleteTarget] =
     useState<QueueRecord | null>(null);
   const [isQueueDeleting, setIsQueueDeleting] = useState(false);
+  const [isDatabaseExpanded, setIsDatabaseExpanded] = useState(false);
+  const [backups, setBackups] = useState<BackupFile[]>([]);
+  const [databaseLoading, setDatabaseLoading] = useState(false);
+  const [databaseError, setDatabaseError] = useState<string | null>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -148,6 +158,27 @@ export default function AdminPage() {
     }
   }, []);
 
+  const fetchBackups = useCallback(async () => {
+    setDatabaseLoading(true);
+    setDatabaseError(null);
+
+    try {
+      const response = await getBackupsList();
+      setBackups(response.backups ?? []);
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        setDatabaseError("You do not have permission to view backups.");
+      } else {
+        setDatabaseError(
+          err?.response?.data?.error?.message || "Unable to load backups.",
+        );
+      }
+    } finally {
+      setDatabaseLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -172,6 +203,11 @@ export default function AdminPage() {
     if (!isQueuerExpanded || queueRecords.length > 0 || queueLoading) return;
     fetchQueuerRecords();
   }, [fetchQueuerRecords, isQueuerExpanded, queueRecords.length, queueLoading]);
+
+  useEffect(() => {
+    if (!isDatabaseExpanded || backups.length > 0 || databaseLoading) return;
+    fetchBackups();
+  }, [fetchBackups, isDatabaseExpanded, backups.length, databaseLoading]);
 
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
@@ -255,6 +291,18 @@ export default function AdminPage() {
       setIsQueueDeleting(false);
     }
   };
+
+  const handleCreateBackup = () => {};
+
+  const handleDownloadBackup = (filename: string) => {
+    void filename;
+  };
+
+  const handleDeleteBackup = (filename: string) => {
+    void filename;
+  };
+
+  const handleRestoreDatabase = () => {};
 
   return (
     <ProtectedRoute requireAdmin>
@@ -633,6 +681,148 @@ export default function AdminPage() {
                     records={queueRecords}
                     onDelete={(target) => setQueueDeleteTarget(target)}
                   />
+                )}
+              </div>
+            )}
+          </section>
+
+          <section className="space-y-4">
+            <button
+              type="button"
+              onClick={() => setIsDatabaseExpanded((prev) => !prev)}
+              className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
+              aria-expanded={isDatabaseExpanded}
+            >
+              <div>
+                <h2 className="text-xl font-display font-semibold text-calm-900">
+                  Database
+                </h2>
+                <p className="text-sm text-calm-500">
+                  Backup and restore database
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCreateBackup();
+                  }}
+                  className="rounded-full border border-primary-200 px-4 py-2 text-xs font-semibold text-primary-700 transition hover:border-primary-300"
+                >
+                  Create Backup
+                </button>
+                {(backups.length > 0 || databaseLoading) && (
+                  <span className="text-calm-500">
+                    {isDatabaseExpanded ? (
+                      <svg
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 15l7-7 7 7"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    )}
+                  </span>
+                )}
+              </div>
+            </button>
+
+            {isDatabaseExpanded && (
+              <div className="rounded-3xl border border-calm-200/70 bg-white p-4 shadow-sm md:p-6">
+                {databaseLoading && (
+                  <div className="space-y-3">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <div
+                        key={`admin-database-skeleton-${index}`}
+                        className="flex items-center justify-between rounded-2xl border border-calm-100 bg-calm-50 px-4 py-3 animate-pulse"
+                      >
+                        <div className="h-4 w-1/2 rounded-full bg-calm-200" />
+                        <div className="h-4 w-24 rounded-full bg-calm-200" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {!databaseLoading && databaseError && (
+                  <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-600">
+                    <p>{databaseError}</p>
+                    <button
+                      type="button"
+                      onClick={fetchBackups}
+                      className="mt-3 rounded-full border border-red-200 px-4 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+
+                {!databaseLoading && !databaseError && (
+                  <div className="space-y-6">
+                    <TableAdminDatabase
+                      backups={backups}
+                      onDownload={handleDownloadBackup}
+                      onDelete={handleDeleteBackup}
+                    />
+
+                    <div className="rounded-2xl border border-calm-100 bg-calm-50/60 p-4">
+                      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <p className="text-sm font-semibold text-calm-700">
+                            Upload Backup (.zip)
+                          </p>
+                          <p className="mt-1 text-xs text-calm-500">
+                            {uploadFile ? uploadFile.name : "No file selected"}
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                          <label className="rounded-full border border-calm-200 bg-white px-4 py-2 text-xs font-semibold text-calm-700 transition hover:border-primary-200">
+                            Choose File
+                            <input
+                              type="file"
+                              accept=".zip"
+                              className="sr-only"
+                              onChange={(event) => {
+                                const file = event.target.files?.[0] || null;
+                                setUploadFile(file);
+                              }}
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={handleRestoreDatabase}
+                            disabled={!uploadFile}
+                            className="rounded-full border border-primary-200 px-4 py-2 text-xs font-semibold text-primary-700 transition hover:border-primary-300 disabled:cursor-not-allowed disabled:border-calm-200 disabled:text-calm-400"
+                          >
+                            Restore Database
+                          </button>
+                        </div>
+                      </div>
+                      <p className="mt-3 text-xs font-semibold text-red-500">
+                        ⚠️ Warning: Restoring will replace all current data
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             )}

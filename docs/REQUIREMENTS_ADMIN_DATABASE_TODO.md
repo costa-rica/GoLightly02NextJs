@@ -43,47 +43,47 @@ This document outlines the tasks needed to implement database backup management 
 ## Phase 3: Admin Page Integration
 
 ### Task 3.1: Add Database section to admin page
-- [ ] Add state variables to `src/app/admin/page.tsx`:
+- [x] Add state variables to `src/app/admin/page.tsx`:
   - `isDatabaseExpanded` (boolean)
   - `backups` (BackupFile[])
   - `databaseLoading` (boolean)
   - `databaseError` (string | null)
   - `uploadFile` (File | null)
-- [ ] Create `fetchBackups()` callback function
+- [x] Create `fetchBackups()` callback function
   - Call `getBackupsList()` API
   - Update state with backups
   - Handle errors
-- [ ] Add useEffect to fetch backups when section expands
+- [x] Add useEffect to fetch backups when section expands
   - Similar pattern to Sounds/Meditations/Queuer sections
   - Only fetch if `isDatabaseExpanded` and `backups.length === 0`
 
 ### Task 3.2: Create collapsible Database section UI
-- [ ] Add new `<section>` after Queuer section
-- [ ] Add toggle button with:
+- [x] Add new `<section>` after Queuer section
+- [x] Add toggle button with:
   - Title: "Database"
   - Subtitle: "Backup and restore database"
   - Expand/collapse arrow icon (conditionally hide if no backups)
-- [ ] Add "Create Backup" button in section header (like "Upload Sound File")
+- [x] Add "Create Backup" button in section header (like "Upload Sound File")
   - Position to the left of expand/collapse arrow
   - Call `handleCreateBackup()` onClick
   - Prevent event propagation (stopPropagation)
 
 ### Task 3.3: Render content when expanded
-- [ ] Show loading skeleton when `databaseLoading === true`
-- [ ] Show error message with retry button when `databaseError !== null`
-- [ ] Show TableAdminDatabase when `!databaseLoading && !databaseError`
-- [ ] Pass backups, onDownload, and onDelete handlers
+- [x] Show loading skeleton when `databaseLoading === true`
+- [x] Show error message with retry button when `databaseError !== null`
+- [x] Show TableAdminDatabase when `!databaseLoading && !databaseError`
+- [x] Pass backups, onDownload, and onDelete handlers
 
 ### Task 3.4: Add file upload section
-- [ ] Add file upload UI below the table
-- [ ] Create file input with:
+- [x] Add file upload UI below the table
+- [x] Create file input with:
   - Accept only `.zip` files
   - Label: "Upload Backup (.zip)"
   - Display selected filename when file is chosen
-- [ ] Add "Restore Database" button
+- [x] Add "Restore Database" button
   - Disabled if no file selected
   - Call `handleRestoreDatabase()` onClick
-- [ ] Show warning text: "⚠️ Warning: Restoring will replace all current data"
+- [x] Show warning text: "⚠️ Warning: Restoring will replace all current data"
 
 ## Phase 4: Action Handlers
 
