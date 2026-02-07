@@ -7,9 +7,15 @@ export const validateEmail = (email: string): boolean => {
 };
 
 /**
- * Validates password requirements (no minimum length enforced)
+ * Validates password requirements (minimum 4 characters)
  */
-export const validatePassword = (_password: string): { valid: boolean; message?: string } => {
+export const validatePassword = (password: string): { valid: boolean; message?: string } => {
+  if (password.length < 4) {
+    return {
+      valid: false,
+      message: 'Password must be at least 4 characters',
+    };
+  }
   return { valid: true };
 };
 

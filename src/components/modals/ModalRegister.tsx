@@ -5,7 +5,6 @@ import { register } from "@/lib/api/auth";
 import {
   validateEmail,
   validatePassword,
-  validatePasswordMatch,
 } from "@/lib/utils/validation";
 
 interface ModalRegisterProps {
@@ -21,11 +20,10 @@ export default function ModalRegister({
 }: ModalRegisterProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
-    confirmPassword?: string;
     general?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -88,16 +86,6 @@ export default function ModalRegister({
       return;
     }
 
-    // Validate password match
-    const passwordMatchValidation = validatePasswordMatch(
-      password,
-      confirmPassword,
-    );
-    if (!passwordMatchValidation.valid) {
-      setErrors({ confirmPassword: passwordMatchValidation.message });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
@@ -111,7 +99,6 @@ export default function ModalRegister({
       // Reset form
       setEmail("");
       setPassword("");
-      setConfirmPassword("");
 
       // Automatically switch to login after 3 seconds
       timeoutRef.current = setTimeout(() => {
@@ -219,47 +206,67 @@ export default function ModalRegister({
             >
               Password
             </label>
-            <input
-              type="password"
-              id="register-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`input-field ${errors.password ? "border-red-500" : ""}`}
-              placeholder="••••••••"
-              disabled={isLoading || !!successMessage}
-              autoComplete="new-password"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="register-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`input-field pr-10 ${errors.password ? "border-red-500" : ""}`}
+                placeholder="••••••••"
+                disabled={isLoading || !!successMessage}
+                autoComplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-calm-500 transition hover:text-calm-700"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                disabled={isLoading || !!successMessage}
+              >
+                {showPassword ? (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.9 9.9a3 3 0 104.2 4.2"
+                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4l16 16" />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6"
+                    />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}
-            <p className="mt-1 text-xs text-calm-500">Minimum 6 characters</p>
-          </div>
-
-          {/* Confirm password field */}
-          <div>
-            <label
-              htmlFor="confirm-password"
-              className="block text-sm font-medium text-calm-700 mb-1"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirm-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`input-field ${errors.confirmPassword ? "border-red-500" : ""}`}
-              placeholder="••••••••"
-              disabled={isLoading || !!successMessage}
-              autoComplete="new-password"
-              required
-            />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.confirmPassword}
-              </p>
-            )}
+            <p className="mt-1 text-xs text-calm-500">Minimum 4 characters</p>
           </div>
 
           {/* Register button */}
