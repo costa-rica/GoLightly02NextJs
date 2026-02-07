@@ -6,6 +6,8 @@ import {
   validateEmail,
   validatePassword,
 } from "@/lib/utils/validation";
+import { useAppDispatch } from "@/store/hooks";
+import { showLoading, hideLoading } from "@/store/features/uiSlice";
 
 interface ModalRegisterProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ export default function ModalRegister({
   onClose,
   onSwitchToLogin,
 }: ModalRegisterProps) {
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -87,6 +90,7 @@ export default function ModalRegister({
     }
 
     setIsLoading(true);
+    dispatch(showLoading("Creating your account..."));
 
     try {
       await register({ email: normalizedEmail, password });
@@ -114,6 +118,7 @@ export default function ModalRegister({
       }
     } finally {
       setIsLoading(false);
+      dispatch(hideLoading());
     }
   };
 
