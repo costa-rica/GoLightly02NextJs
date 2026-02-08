@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Go Lightly** (formerly Mantrify) - A Next.js TypeScript web application for creating personalized guided meditations combining affirmations and contemplative silences. The app communicates with a separate Express API (Mantrify01API) which orchestrates audio file generation through ElevenLabs TTS and audio concatenation services.
+**Go Lightly** (formerly GoLightly) - A Next.js TypeScript web application for creating personalized guided meditations combining affirmations and contemplative silences. The app communicates with a separate Express API (GoLightly01API) which orchestrates audio file generation through ElevenLabs TTS and audio concatenation services.
 
 ## Development Commands
 
@@ -30,8 +30,9 @@ npm run lint
 ### State Management
 
 Redux Toolkit with Redux Persist:
+
 - **Auth slice** (`src/store/features/authSlice.ts`): User authentication, JWT tokens, admin status
-- **Meditation slice** (`src/store/features/meditationSlice.ts`): Meditation/mantra data and creation state
+- **Meditation slice** (`src/store/features/meditationSlice.ts`): Meditation/meditation data and creation state
 - Only auth state is persisted to localStorage
 - Store configuration in `src/store/index.ts`
 - Typed hooks exported from `src/store/hooks.ts`
@@ -44,7 +45,7 @@ The app is a **frontend-only client** that communicates with a separate API back
 - Base URL from `NEXT_PUBLIC_API_BASE_URL` environment variable
 - JWT tokens automatically injected via request interceptor (reads from Redux persist in localStorage)
 - Response interceptor handles 401s by clearing auth state
-- **Important**: This Next.js app does NOT contain API routes - all backend logic lives in the separate Mantrify01API Express application
+- **Important**: This Next.js app does NOT contain API routes - all backend logic lives in the separate GoLightly01API Express application
 
 ### Authentication Flow
 
@@ -57,6 +58,7 @@ The app is a **frontend-only client** that communicates with a separate API back
 ### Form Submission Pattern
 
 Meditation creation form (`src/components/forms/MeditationForm.tsx`) implements a critical pattern:
+
 - **All form controls must be disabled during submission** to prevent double-submission
 - CSV-like row structure: each row can be Text (with optional speed 0.7-1.3), Pause (duration in seconds), or Sound File (dropdown)
 - Submit creates meditation via API, which queues audio generation job
@@ -64,11 +66,13 @@ Meditation creation form (`src/components/forms/MeditationForm.tsx`) implements 
 ### Meditation Creation Workflow
 
 Users build meditations row-by-row where each row is one of:
+
 1. **Text**: Affirmation text + optional speed (0.7-1.3x, sent to ElevenLabs for TTS)
 2. **Pause**: Silent duration in seconds
 3. **Sound File**: Background audio (fetched from `GET /sounds/sound_files`)
 
 The form mirrors the CSV format used by the backend queuer service, which orchestrates:
+
 - RequesterElevenLabs01 (TTS generation)
 - AudioFileConcatenator01 (combines segments into final MP3)
 
@@ -82,6 +86,7 @@ The form mirrors the CSV format used by the backend queuer service, which orches
 ## Path Aliases
 
 Configure in `tsconfig.json`:
+
 - `@/*` → `src/*`
 - `@/components/*` → `src/components/*`
 - `@/lib/*` → `src/lib/*`
@@ -109,6 +114,7 @@ Common codes: `VALIDATION_ERROR`, `AUTH_FAILED`, `FORBIDDEN`, `NOT_FOUND`, `INTE
 ## Logging Implementation
 
 Follow `docs/LOGGING_NODE_JS_V06.md`:
+
 - Winston logger configured in `src/config/logger.ts`
 - Modes: development (console only), testing (console + files), production (files only)
 - Required env vars: `NEXT_PUBLIC_MODE`, `NEXT_PUBLIC_NAME_APP`, `NEXT_PUBLIC_PATH_TO_LOGS`
@@ -132,24 +138,27 @@ Follow `docs/LOGGING_NODE_JS_V06.md`:
 ## Database Schema Reference
 
 See `docs/DATABASE_OVERVIEW.md` for complete schema. Key tables:
+
 - **Users**: email, password (bcrypt), isEmailVerified, isAdmin
-- **Mantras**: title, description, visibility (public/private), filename, filePath, listenCount
-- **ContractUsersMantras**: Junction table linking users to their mantras
-- **ContractUserMantraListens**: Tracks registered user listen counts and favorites
+- **Meditations**: title, description, visibility (public/private), filename, filePath, listenCount
+- **ContractUsersMeditations**: Junction table linking users to their meditations
+- **ContractUserMeditationListens**: Tracks registered user listen counts and favorites
 - **SoundFiles**: Background audio options for meditations
 - **Queue**: Job queue status (queued, started, elevenlabs, concatenator, done)
 
 ## API Documentation
 
 See `docs/api-documentation/`:
+
 - `API_REFERENCE.md` - Overview and endpoint format standards
 - `api/users.md` - Authentication endpoints
-- `api/mantras.md` - Meditation CRUD and streaming
+- `api/meditations.md` - Meditation CRUD and streaming
 - `api/sounds.md` - Sound file management
 
 ## Environment Variables
 
 Required:
+
 - `NEXT_PUBLIC_API_BASE_URL` - Backend API base URL
 - `NEXT_PUBLIC_MODE` - development/testing/production
 - `NEXT_PUBLIC_NAME_APP` - App identifier for logging
@@ -161,5 +170,5 @@ Required:
 - Global styles in `src/styles/globals.css`
 - Modern, clean, calming color scheme
 - Fully responsive design
-- Logo: `public/images/mantrifyLogo02.png`
+- Logo: `public/images/golightlyLogo02.png`
 - Favicon: `public/images/favicon_io/`

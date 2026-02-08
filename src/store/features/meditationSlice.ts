@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface MantraElement {
+export interface MeditationElement {
   id: number;
   text?: string;
   voice_id?: string;
@@ -13,7 +13,7 @@ export interface Meditation {
   id: number;
   title: string;
   description?: string;
-  mantraArray: MantraElement[];
+  meditationArray: MeditationElement[];
   filename: string;
   filePath?: string;
   visibility: string;

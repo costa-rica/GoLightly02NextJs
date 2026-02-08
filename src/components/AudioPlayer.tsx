@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { getStreamUrl } from "@/lib/api/mantras";
+import { getStreamUrl } from "@/lib/api/meditations";
 import { useAppSelector } from "@/store/hooks";
 
 type AudioPlayerProps = {
-  mantraId: number;
+  meditationId: number;
   title: string;
 };
 
-export default function AudioPlayer({ mantraId, title }: AudioPlayerProps) {
+export default function AudioPlayer({ meditationId, title }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const objectUrlRef = useRef<string | null>(null);
-  const { accessToken, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { accessToken, isAuthenticated } = useAppSelector(
+    (state) => state.auth,
+  );
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ export default function AudioPlayer({ mantraId, title }: AudioPlayerProps) {
       return objectUrlRef.current;
     }
 
-    const url = getStreamUrl(mantraId);
+    const url = getStreamUrl(meditationId);
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -90,7 +92,7 @@ export default function AudioPlayer({ mantraId, title }: AudioPlayerProps) {
         const objectUrl = await prepareAuthenticatedStream();
         audio.src = objectUrl;
       } else {
-        audio.src = getStreamUrl(mantraId);
+        audio.src = getStreamUrl(meditationId);
       }
       await audio.play();
     } catch (err: any) {

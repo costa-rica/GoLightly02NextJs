@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  deleteMantra,
-  favoriteMantra,
-  getAllMantras,
-  updateMantra,
-} from "@/lib/api/mantras";
+  deleteMeditation,
+  favoriteMeditation,
+  getAllMeditations,
+  updateMeditation,
+} from "@/lib/api/meditations";
 import AudioPlayer from "@/components/AudioPlayer";
 import ModalMeditationDetails from "@/components/modals/ModalMeditationDetails";
 import Toast from "@/components/Toast";
@@ -26,9 +26,12 @@ export default function TableMeditation() {
   const { meditations, loading, error } = useAppSelector(
     (state) => state.meditation,
   );
-  const { isAuthenticated, accessToken, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, accessToken, user } = useAppSelector(
+    (state) => state.auth,
+  );
   const [isExpanded, setIsExpanded] = useState(true);
-  const [selectedMeditation, setSelectedMeditation] = useState<Meditation | null>(null);
+  const [selectedMeditation, setSelectedMeditation] =
+    useState<Meditation | null>(null);
   const [toast, setToast] = useState<{
     message: string;
     variant: "success" | "error";
@@ -39,17 +42,19 @@ export default function TableMeditation() {
     dispatch(setError(null));
 
     try {
-      // Pass accessToken if authenticated - backend will return appropriate mantras
-      const response = await getAllMantras(isAuthenticated ? accessToken : null);
-      const mantras = response.mantras ?? [];
+      // Pass accessToken if authenticated - backend will return appropriate meditations
+      const response = await getAllMeditations(
+        isAuthenticated ? accessToken : null,
+      );
+      const meditations = response.meditations ?? [];
 
       // Set isOwned flag based on ownerUserId comparison
-      const mantrasWithOwnership = mantras.map((mantra) => ({
-        ...mantra,
-        isOwned: user ? mantra.ownerUserId === user.id : undefined,
+      const meditationsWithOwnership = meditations.map((meditation) => ({
+        ...meditation,
+        isOwned: user ? meditation.ownerUserId === user.id : undefined,
       }));
 
-      dispatch(setMeditations(mantrasWithOwnership));
+      dispatch(setMeditations(meditationsWithOwnership));
     } catch (err: any) {
       const message =
         err?.response?.data?.error?.message ||
@@ -62,36 +67,43 @@ export default function TableMeditation() {
     fetchMeditations();
   }, [fetchMeditations]);
 
-  // Backend already filters mantras based on authentication state:
-  // - Anonymous: only public mantras
-  // - Authenticated: public mantras + user's private mantras
+  // Backend already filters meditations based on authentication state:
+  // - Anonymous: only public meditations
+  // - Authenticated: public meditations + user's private meditations
   const visibleRows = useMemo(() => {
     return Array.isArray(meditations) ? meditations : [];
   }, [meditations]);
 
   const handleToggleFavorite = async (
-    mantraId: number,
+    meditationId: number,
     currentValue?: boolean,
   ) => {
     if (!isAuthenticated) return;
     const nextValue = !currentValue;
-    dispatch(toggleFavorite({ id: mantraId, isFavorite: nextValue }));
+    dispatch(toggleFavorite({ id: meditationId, isFavorite: nextValue }));
 
     try {
-      await favoriteMantra(mantraId, nextValue);
+      await favoriteMeditation(meditationId, nextValue);
     } catch (err) {
-      dispatch(toggleFavorite({ id: mantraId, isFavorite: !nextValue }));
+      dispatch(toggleFavorite({ id: meditationId, isFavorite: !nextValue }));
     }
   };
 
   const handleUpdate = async (
     id: number,
-    data: { title?: string; description?: string; visibility?: "public" | "private" }
+    data: {
+      title?: string;
+      description?: string;
+      visibility?: "public" | "private";
+    },
   ) => {
     try {
-      const response = await updateMantra(id, data);
-      dispatch(updateMeditation(response.mantra));
-      setToast({ message: "Meditation updated successfully.", variant: "success" });
+      const response = await updateMeditation(id, data);
+      dispatch(updateMeditation(response.meditation));
+      setToast({
+        message: "Meditation updated successfully.",
+        variant: "success",
+      });
       setSelectedMeditation(null);
     } catch (err: any) {
       const status = err?.response?.status;
@@ -114,9 +126,12 @@ export default function TableMeditation() {
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteMantra(id);
+      await deleteMeditation(id);
       dispatch(deleteMeditation(id));
-      setToast({ message: "Meditation deleted successfully.", variant: "success" });
+      setToast({
+        message: "Meditation deleted successfully.",
+        variant: "success",
+      });
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 403) {
@@ -252,50 +267,50 @@ export default function TableMeditation() {
                           key={meditation.id}
                           className="border-t border-calm-100 text-calm-700"
                         >
-                        <td className="px-4 py-3 font-medium text-calm-900">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedMeditation(meditation)}
-                            className="text-left underline decoration-calm-300 underline-offset-2 transition hover:decoration-primary-500 hover:text-primary-700"
-                          >
-                            {meditation.title}
-                          </button>
-                        </td>
-                        <td className="px-4 py-3">
-                          <AudioPlayer
-                            mantraId={meditation.id}
-                            title={meditation.title}
-                          />
-                        </td>
-                        {isAuthenticated && (
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-4 py-3 font-medium text-calm-900">
                             <button
                               type="button"
-                              onClick={() =>
-                                handleToggleFavorite(
-                                  meditation.id,
-                                  meditation.isFavorite,
-                                )
-                              }
-                              className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-sm transition ${
-                                meditation.isFavorite
-                                  ? "border-amber-200 bg-amber-50 text-amber-500"
-                                  : "border-calm-200 text-calm-400 hover:border-primary-200 hover:text-primary-700"
-                              }`}
-                              aria-label={
-                                meditation.isFavorite
-                                  ? `Remove ${meditation.title} from favorites`
-                                  : `Add ${meditation.title} to favorites`
-                              }
+                              onClick={() => setSelectedMeditation(meditation)}
+                              className="text-left underline decoration-calm-300 underline-offset-2 transition hover:decoration-primary-500 hover:text-primary-700"
                             >
-                              ★
+                              {meditation.title}
                             </button>
                           </td>
-                        )}
-                        <td className="px-4 py-3 text-right text-calm-600">
-                          {listenCount}
-                        </td>
-                      </tr>
+                          <td className="px-4 py-3">
+                            <AudioPlayer
+                              meditationId={meditation.id}
+                              title={meditation.title}
+                            />
+                          </td>
+                          {isAuthenticated && (
+                            <td className="px-4 py-3 text-center">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleToggleFavorite(
+                                    meditation.id,
+                                    meditation.isFavorite,
+                                  )
+                                }
+                                className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-sm transition ${
+                                  meditation.isFavorite
+                                    ? "border-amber-200 bg-amber-50 text-amber-500"
+                                    : "border-calm-200 text-calm-400 hover:border-primary-200 hover:text-primary-700"
+                                }`}
+                                aria-label={
+                                  meditation.isFavorite
+                                    ? `Remove ${meditation.title} from favorites`
+                                    : `Add ${meditation.title} to favorites`
+                                }
+                              >
+                                ★
+                              </button>
+                            </td>
+                          )}
+                          <td className="px-4 py-3 text-right text-calm-600">
+                            {listenCount}
+                          </td>
+                        </tr>
                       );
                     })}
                   </tbody>

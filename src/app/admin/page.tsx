@@ -12,10 +12,10 @@ import ModalConfirmDelete from "@/components/modals/ModalConfirmDelete";
 import ModalConfirmDeleteUser from "@/components/modals/ModalConfirmDeleteUser";
 import Toast from "@/components/Toast";
 import {
-  deleteMantra,
+  deleteMeditation,
   deleteQueuerRecord,
   deleteUser,
-  getAllMantras,
+  getAllMeditations,
   getQueuerRecords,
   getUsers,
   type AdminUser,
@@ -128,8 +128,8 @@ export default function AdminPage() {
     setMeditationsError(null);
 
     try {
-      const response = await getAllMantras();
-      setMeditations(response.mantras ?? []);
+      const response = await getAllMeditations();
+      setMeditations(response.meditations ?? []);
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 401 || status === 403) {
@@ -207,7 +207,7 @@ export default function AdminPage() {
     fetchBackups();
   }, [fetchBackups]);
 
-  const handleDeleteConfirm = async (savePublicMantras: boolean) => {
+  const handleDeleteConfirm = async (savePublicMeditations: boolean) => {
     if (!deleteTarget) return;
     if (deleteTarget.id === user?.id) {
       setToast({
@@ -220,8 +220,8 @@ export default function AdminPage() {
 
     setIsDeleting(true);
     try {
-      const options = deleteTarget.hasPublicMantras
-        ? { savePublicMantrasAsBenevolentUser: savePublicMantras }
+      const options = deleteTarget.hasPublicMeditations
+        ? { savePublicMeditationsAsBenevolentUser: savePublicMeditations }
         : undefined;
       await deleteUser(deleteTarget.id, options);
       setUsers((prev) => prev.filter((item) => item.id !== deleteTarget.id));
@@ -259,7 +259,7 @@ export default function AdminPage() {
     if (!meditationDeleteTarget) return;
     setIsMeditationDeleting(true);
     try {
-      await deleteMantra(meditationDeleteTarget.id);
+      await deleteMeditation(meditationDeleteTarget.id);
       setMeditations((prev) =>
         prev.filter((item) => item.id !== meditationDeleteTarget.id),
       );

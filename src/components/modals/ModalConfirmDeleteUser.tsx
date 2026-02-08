@@ -8,7 +8,7 @@ type ModalConfirmDeleteUserProps = {
   user: AdminUser | null;
   isLoading?: boolean;
   onClose: () => void;
-  onConfirm: (savePublicMantras: boolean) => void;
+  onConfirm: (savePublicMeditations: boolean) => void;
 };
 
 export default function ModalConfirmDeleteUser({
@@ -18,7 +18,7 @@ export default function ModalConfirmDeleteUser({
   onClose,
   onConfirm,
 }: ModalConfirmDeleteUserProps) {
-  const [savePublicMantras, setSavePublicMantras] = useState(false);
+  const [savePublicMeditations, setSavePublicMeditations] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -43,7 +43,7 @@ export default function ModalConfirmDeleteUser({
   useEffect(() => {
     // Reset checkbox when modal opens/closes
     if (!isOpen) {
-      setSavePublicMantras(false);
+      setSavePublicMeditations(false);
     }
   }, [isOpen]);
 
@@ -56,7 +56,7 @@ export default function ModalConfirmDeleteUser({
   };
 
   const handleConfirm = () => {
-    onConfirm(savePublicMantras);
+    onConfirm(savePublicMeditations);
   };
 
   return (
@@ -69,7 +69,9 @@ export default function ModalConfirmDeleteUser({
       <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-calm-400">Confirmation</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-calm-400">
+              Confirmation
+            </p>
             <h2 className="mt-2 text-xl font-display font-semibold text-calm-900">
               Delete {user.email}
             </h2>
@@ -89,13 +91,13 @@ export default function ModalConfirmDeleteUser({
           This will permanently remove the user account.
         </p>
 
-        {user.hasPublicMantras && (
+        {user.hasPublicMeditations && (
           <div className="mt-4 rounded-lg border border-calm-200 bg-calm-50 p-4">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
-                checked={savePublicMantras}
-                onChange={(e) => setSavePublicMantras(e.target.checked)}
+                checked={savePublicMeditations}
+                onChange={(e) => setSavePublicMeditations(e.target.checked)}
                 disabled={isLoading}
                 className="mt-0.5 h-4 w-4 rounded border-calm-300 text-primary-600 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed"
               />
@@ -104,7 +106,8 @@ export default function ModalConfirmDeleteUser({
                   Keep public meditations
                 </span>
                 <p className="mt-1 text-xs text-calm-600">
-                  Convert user to benevolent account to preserve their public meditations
+                  Convert user to benevolent account to preserve their public
+                  meditations
                 </p>
               </div>
             </label>

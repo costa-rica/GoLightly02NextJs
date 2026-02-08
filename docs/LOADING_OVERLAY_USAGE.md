@@ -13,8 +13,8 @@ The `LoadingOverlay` component provides a global loading indicator with an overl
 ### Basic Usage
 
 ```typescript
-import { useAppDispatch } from '@/store/hooks';
-import { showLoading, hideLoading } from '@/store/features/uiSlice';
+import { useAppDispatch } from "@/store/hooks";
+import { showLoading, hideLoading } from "@/store/features/uiSlice";
 
 function MyComponent() {
   const dispatch = useAppDispatch();
@@ -37,10 +37,10 @@ function MyComponent() {
 ```typescript
 const handleCreateMeditation = async () => {
   // Show loading overlay with custom message
-  dispatch(showLoading('Creating your meditation...'));
+  dispatch(showLoading("Creating your meditation..."));
 
   try {
-    await createMantra(data);
+    await createMeditation(data);
   } finally {
     dispatch(hideLoading());
   }

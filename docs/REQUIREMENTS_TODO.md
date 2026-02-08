@@ -1,6 +1,6 @@
-# Mantrify NextJS - Frontend Development Task List
+# GoLightly NextJS - Frontend Development Task List
 
-This document provides a detailed, phase-based task list for building the Mantrify meditation application. Each task should be marked with `[x]` when completed. Commit changes to git after completing each phase.
+This document provides a detailed, phase-based task list for building the GoLightly meditation application. Each task should be marked with `[x]` when completed. Commit changes to git after completing each phase.
 
 ---
 
@@ -19,7 +19,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 - [x] Add `NEXT_PUBLIC_API_BASE_URL` environment variable
 - [x] Add Winston logging environment variables per docs/LOGGING_NODE_JS_V06.md:
   - `NEXT_PUBLIC_MODE` (development/testing/production)
-  - `NAME_APP=Mantrify01NextJs`
+  - `NAME_APP=GoLightly01NextJs`
   - `PATH_TO_LOGS` (absolute path)
   - `LOG_MAX_SIZE` (optional, default 5MB)
   - `LOG_MAX_FILES` (optional, default 5)
@@ -44,7 +44,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 1.5 Static Assets
 
-- [x] Verify logo exists at `public/images/mantrifyLogo02.png`
+- [x] Verify logo exists at `public/images/golightlyLogo02.png`
 - [x] Verify favicon files exist at `public/images/favicon_io/`
 - [x] Configure favicon in `src/app/layout.tsx`
 
@@ -86,12 +86,12 @@ This document provides a detailed, phase-based task list for building the Mantri
   - `login(email, password)`
   - `forgotPassword(email)`
   - `resetPassword(token, newPassword)`
-- [x] Create `src/lib/api/mantras.ts`:
-  - `getAllMantras(includePrivate)`
-  - `createMantra(mantraData)`
-  - `streamMantra(id)` (returns stream URL)
-  - `favoriteMantra(id, isFavorite)`
-  - `deleteMantra(id)`
+- [x] Create `src/lib/api/meditations.ts`:
+  - `getAllMeditations(includePrivate)`
+  - `createMeditation(meditationData)`
+  - `streamMeditation(id)` (returns stream URL)
+  - `favoriteMeditation(id, isFavorite)`
+  - `deleteMeditation(id)`
 - [x] Create `src/lib/api/sounds.ts`:
   - `getSoundFiles()`
   - `uploadSoundFile(file, name, description)`
@@ -99,8 +99,8 @@ This document provides a detailed, phase-based task list for building the Mantri
 - [x] Create `src/lib/api/admin.ts`:
   - `getUsers()`
   - `deleteUser(id)`
-  - `getAllMantras()`
-  - `deleteMantraAdmin(id)`
+  - `getAllMeditations()`
+  - `deleteMeditationAdmin(id)`
   - `getQueuerRecords()`
   - `deleteQueuerRecord(id)`
 
@@ -131,7 +131,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 - [x] Create `src/components/Navigation.tsx`
 - [x] Implement fixed top navigation bar
-- [x] Add logo on the left (use public/images/mantrifyLogo02.png)
+- [x] Add logo on the left (use public/images/golightlyLogo02.png)
 - [x] Add navigation links on the right:
   - Home
   - Admin (only visible if user.isAdmin === true)
@@ -195,7 +195,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 - [x] Create `src/components/tables/TableMeditation.tsx`
 - [x] Implement expandable/collapsible section with "Meditations" heading
 - [x] Default state: expanded
-- [x] Fetch data from `GET /mantras/all` on component mount
+- [x] Fetch data from `GET /meditations/all` on component mount
 - [x] Display columns for all users:
   - Title
   - Play button (▶)
@@ -211,7 +211,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 - [x] Create `src/components/AudioPlayer.tsx`
 - [x] Implement HTML5 audio player
-- [x] Connect to `GET /mantras/:id/stream` endpoint
+- [x] Connect to `GET /meditations/:id/stream` endpoint
 - [x] Add token to Authorization header if user is authenticated
 - [x] Support play/pause controls
 - [x] Show loading state while buffering
@@ -224,7 +224,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 - [x] Display yellow star if favorited, white/outline if not
 - [x] Fetch favorites status from API response
 - [x] Implement star toggle functionality:
-  - On click: call `POST /mantras/favorite/:mantraId/:trueOrFalse`
+  - On click: call `POST /meditations/favorite/:meditationId/:trueOrFalse`
   - Toggle star color immediately (optimistic update)
   - Handle API errors and revert on failure
 - [x] Show user's own meditations with "Delete" button
@@ -235,7 +235,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 - [x] Create `src/components/modals/ModalConfirmDelete.tsx`
 - [x] Show confirmation dialog before deleting
-- [x] Connect to `DELETE /mantras/:id` endpoint
+- [x] Connect to `DELETE /meditations/:id` endpoint
 - [x] Remove meditation from table on successful delete
 - [x] Show success/error toast notification
 - [x] Handle 403 error (not owner) and 404 (not found)
@@ -315,14 +315,14 @@ This document provides a detailed, phase-based task list for building the Mantri
     "title": "string",
     "description": "string",
     "visibility": "public" | "private",
-    "mantraArray": [
+    "meditationArray": [
       { "id": 1, "pause_duration": "3.0" },
       { "id": 2, "text": "...", "speed": "0.85" },
       { "id": 3, "sound_file": "filename.mp3" }
     ]
   }
   ```
-- [x] Connect to `POST /mantras/create` endpoint
+- [x] Connect to `POST /meditations/create` endpoint
 - [x] Show loading state during submission
 - [x] On success:
   - Show success message
@@ -411,7 +411,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 - [x] Show confirmation modal
 - [x] Connect to `DELETE /sounds/sound_file/:id` endpoint
 - [x] Remove from table on success
-- [x] Handle error if sound file is in use by mantras
+- [x] Handle error if sound file is in use by meditations
 
 ---
 
@@ -421,7 +421,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 - [x] Create expandable/collapsible section with "Meditations" heading
 - [x] Default state: collapsed
-- [x] Fetch data from `GET /admin/mantras` on expand
+- [x] Fetch data from `GET /admin/meditations` on expand
 
 ### 8.2 TableAdminMeditations Component
 
@@ -439,7 +439,7 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 - [x] Add delete button for each meditation
 - [x] Show confirmation modal with warning (admin can delete any meditation)
-- [x] Connect to `DELETE /admin/mantras/:id` endpoint
+- [x] Connect to `DELETE /admin/meditations/:id` endpoint
 - [x] Remove from table on success
 - [x] Handle errors appropriately
 

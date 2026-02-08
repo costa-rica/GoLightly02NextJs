@@ -1,12 +1,12 @@
-# Mantrify NextJs Project Requirements
+# GoLightly NextJs Project Requirements
 
 ## Project Inspiration
 
-The Mantrify app is a web application that allows users to create their own guided meditations. Specifically, we want to create **lightly guided meditations**. The goal of Mantrify is to enable users to create these lightly guided meditations that combines purposeful affirmations, common in modern secular/therapeutic meditation, with contemplative silences, allowing users to balance guided reflection with spacious awareness—drawing from diverse meditation traditions worldwide.
+The GoLightly app is a web application that allows users to create their own guided meditations. Specifically, we want to create **lightly guided meditations**. The goal of GoLightly is to enable users to create these lightly guided meditations that combines purposeful affirmations, common in modern secular/therapeutic meditation, with contemplative silences, allowing users to balance guided reflection with spacious awareness—drawing from diverse meditation traditions worldwide.
 
 Contemporary practice emphasizes regular reminders of gratitude, acceptance, and thought non-identification. These concepts are rooted in ancient wisdom and now supported by research.
 
-Mantrify provides an easy way for users to create and share their own guided meditations.
+GoLightly provides an easy way for users to create and share their own guided meditations.
 
 ## Build process
 
@@ -34,7 +34,7 @@ The admin page will only be accessible to users where isAdmin is true. If the us
 
 Please use a modern clean style for the website. Use a color scheme that is calming and relaxing. Use a color scheme that is calming and relaxing.
 
-The logo is in public/images/mantrifyLogo02.png and the favicon is in public/images/favicon_io/.
+The logo is in public/images/golightlyLogo02.png and the favicon is in public/images/favicon_io/.
 
 ## Website Homepage
 
@@ -44,21 +44,21 @@ The main page will have two sections expandable and collapsable sections stacked
 
 ## Meditation Table Section
 
-All users will see the title, a play button, number of listens, for all public meditations. The table will be populated using the GET /mantras/all endpoint (see documentation for endpoint in docs/api-documentation/api/mantras.md).
+All users will see the title, a play button, number of listens, for all public meditations. The table will be populated using the GET /meditations/all endpoint (see documentation for endpoint in docs/api-documentation/api/meditations.md).
 
 This tabel will have to be visible in small screens as well. The table will be scrollable and have a fixed header. Make the text size smaller for small screens.
 
-A registered user will be able to see all the public meditations and their own private meditations as well as a column for favorite. They will be able to click a star button that will make the meditaiton one of their favorites. If the star is clicked it will turn yellow and a request will be sent to POST /mantras/favorite/:mantraId/:trueOrFalse (see documentation for endpoint in docs/api-documentation/api/mantras.md), where the mantraId is the id of the meditation and trueOrFalse is a boolean value that indicates if the meditation is a favorite or not. If the start is clicked again it will turn white and a request will be sent to POST /mantras/favorite/:mantraId/:trueOrFalse, where the mantraId is the id of the meditation and trueOrFalse is a boolean value that indicates if the meditation is a favorite or not.
+A registered user will be able to see all the public meditations and their own private meditations as well as a column for favorite. They will be able to click a star button that will make the meditaiton one of their favorites. If the star is clicked it will turn yellow and a request will be sent to POST /meditations/favorite/:meditationId/:trueOrFalse (see documentation for endpoint in docs/api-documentation/api/meditations.md), where the meditationId is the id of the meditation and trueOrFalse is a boolean value that indicates if the meditation is a favorite or not. If the start is clicked again it will turn white and a request will be sent to POST /meditations/favorite/:meditationId/:trueOrFalse, where the meditationId is the id of the meditation and trueOrFalse is a boolean value that indicates if the meditation is a favorite or not.
 
-The play button will stream using the GET /mantras/:id/stream endpoint (see documentation for endpoint in docs/api-documentation/api/mantras.md).
+The play button will stream using the GET /meditations/:id/stream endpoint (see documentation for endpoint in docs/api-documentation/api/meditations.md).
 
-Logged in users will see their own meditations will have a delete button. The delete button will call the DELETE /mantras/:id endpoint (see documentation for endpoint in docs/api-documentation/api/mantras.md).
+Logged in users will see their own meditations will have a delete button. The delete button will call the DELETE /meditations/:id endpoint (see documentation for endpoint in docs/api-documentation/api/meditations.md).
 
-## Create Mantra section
+## Create Meditation section
 
 Registered users will see an expandable section that will say "Create New Meditation". The section will be a form that will be a single row at first, but have a plus sign or indication to add more rows. This section will not be visible to visitors not logged in.
 
-The goal of this form will be to mimic the creation of the csv file the Mantrify01Queuer, refered to as the queuer from here on out, creates. The queuer is an API service that the Mantrify01API, refered to as the api from here on out, will use to create the audio files for the meditations. This app will communicate directly with the api to create the meditations, login, and other admin functions.
+The goal of this form will be to mimic the creation of the csv file the GoLightly01Queuer, refered to as the queuer from here on out, creates. The queuer is an API service that the GoLightly01API, refered to as the api from here on out, will use to create the audio files for the meditations. This app will communicate directly with the api to create the meditations, login, and other admin functions.
 
 The queuer is a seperate service on the local machine that orchestrates the communcation with ElevenLabs (named RequesterElevenLabs01) to create text-to-speech file and an audio file concatenator microservice (named AudioFileConcatenator01), that combines the files into one meditation mp3 file.
 
@@ -81,7 +81,7 @@ The sound file input will also be a dropdown that selects from the sounds files 
 
 Below there will be an "Add Row" button that will add a new row to the table. Again the default selection will be "Text".
 
-In the same section but below the table of rows there will be a button that says "submit". When clicked it will send a request to the POST /mantras/create endpoint.
+In the same section but below the table of rows there will be a button that says "submit". When clicked it will send a request to the POST /meditations/create endpoint.
 
 ## Admin Page
 
@@ -99,7 +99,7 @@ There will be a button that says "Upload Sound File", in the section above the t
 
 ### Meditations
 
-The Meditations section will have a table component called TableAdminMeditations. This table will display all the meditations that are available to be used in the meditations. It will popualate with data from the GET /admin/mantras endpoint. It will have columns for id, name, and delete button. The delete button will call the DELETE /admin/mantras/:id endpoint.
+The Meditations section will have a table component called TableAdminMeditations. This table will display all the meditations that are available to be used in the meditations. It will popualate with data from the GET /admin/meditations endpoint. It will have columns for id, name, and delete button. The delete button will call the DELETE /admin/meditations/:id endpoint.
 
 ### Queuer
 

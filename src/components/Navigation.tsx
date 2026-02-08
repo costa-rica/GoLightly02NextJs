@@ -98,7 +98,7 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
             <Link href="/" className="flex items-center gap-3">
               <Image
-                src="/images/mantrifyLogo02.png"
+                src="/images/golightlyLogo02.png"
                 alt="Go Lightly"
                 width={36}
                 height={36}
@@ -163,8 +163,8 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
               onClick={handleCloseMobile}
             >
               <Image
-                src="/images/mantrifyLogo02.png"
-                alt="Mantrify"
+                src="/images/golightlyLogo02.png"
+                alt="GoLightly"
                 width={32}
                 height={32}
                 className="rounded-full"
@@ -183,9 +183,7 @@ export default function Navigation({ onLoginClick }: NavigationProps) {
             </button>
           </div>
 
-          {navLinks && (
-            <nav className="flex flex-col gap-4">{navLinks}</nav>
-          )}
+          {navLinks && <nav className="flex flex-col gap-4">{navLinks}</nav>}
 
           <button
             type="button"

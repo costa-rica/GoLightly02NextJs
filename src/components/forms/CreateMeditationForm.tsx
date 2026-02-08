@@ -1,24 +1,33 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createMantra } from "@/lib/api/mantras";
+import { createMeditation } from "@/lib/api/meditations";
 import { getSoundFiles } from "@/lib/api/sounds";
 import Toast from "@/components/Toast";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setMeditations } from "@/store/features/meditationSlice";
 import { showLoading, hideLoading } from "@/store/features/uiSlice";
-import { getAllMantras } from "@/lib/api/mantras";
-import { validateMeditationTitle, validatePauseDuration, validateSpeed } from "@/lib/utils/validation";
+import { getAllMeditations } from "@/lib/api/meditations";
+import {
+  validateMeditationTitle,
+  validatePauseDuration,
+  validateSpeed,
+} from "@/lib/utils/validation";
 import ModalConfirmCreateMeditation from "@/components/modals/ModalConfirmCreateMeditation";
 
 export default function CreateMeditationForm() {
   const dispatch = useAppDispatch();
-  const { isAuthenticated, accessToken } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, accessToken } = useAppSelector(
+    (state) => state.auth,
+  );
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [visibility, setVisibility] = useState<"public" | "private">("public");
-  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
+  const [errors, setErrors] = useState<{
+    title?: string;
+    description?: string;
+  }>({});
   type Row = {
     id: number;
     type: "text" | "pause" | "sound";
@@ -36,11 +45,16 @@ export default function CreateMeditationForm() {
 
   const [rows, setRows] = useState<Row[]>([]);
   const [rowErrors, setRowErrors] = useState<Record<number, RowError>>({});
-  const [soundFiles, setSoundFiles] = useState<Array<{ name: string; filename: string }>>([]);
+  const [soundFiles, setSoundFiles] = useState<
+    Array<{ name: string; filename: string }>
+  >([]);
   const [soundsLoading, setSoundsLoading] = useState(false);
   const [soundsError, setSoundsError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: "success" | "error";
+  } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeRowMenu, setActiveRowMenu] = useState<number | null>(null);
   const maxDescriptionLength = 300;
@@ -56,10 +70,11 @@ export default function CreateMeditationForm() {
           response.soundFiles.map((sound) => ({
             name: sound.name,
             filename: sound.filename,
-          }))
+          })),
         );
       } catch (err: any) {
-        const message = err?.response?.data?.error?.message || "Unable to load sound files.";
+        const message =
+          err?.response?.data?.error?.message || "Unable to load sound files.";
         setSoundsError(message);
       } finally {
         setSoundsLoading(false);
@@ -109,7 +124,7 @@ export default function CreateMeditationForm() {
     setRows((prev) =>
       prev
         .filter((row) => row.id !== id)
-        .map((row, index) => ({ ...row, id: index + 1 }))
+        .map((row, index) => ({ ...row, id: index + 1 })),
     );
     setRowErrors({});
   };
@@ -129,7 +144,9 @@ export default function CreateMeditationForm() {
   };
 
   const updateRow = (id: number, updates: Partial<Row>) => {
-    setRows((prev) => prev.map((row) => (row.id === id ? { ...row, ...updates } : row)));
+    setRows((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, ...updates } : row)),
+    );
   };
 
   const clearRowError = (id: number, field: keyof RowError) => {
@@ -142,7 +159,10 @@ export default function CreateMeditationForm() {
     }));
   };
 
-  const submitEnabled = useMemo(() => !isSubmitting && rows.length > 0, [isSubmitting, rows.length]);
+  const submitEnabled = useMemo(
+    () => !isSubmitting && rows.length > 0,
+    [isSubmitting, rows.length],
+  );
 
   const handleOpenModal = () => {
     // Validate rows before opening modal
@@ -205,11 +225,11 @@ export default function CreateMeditationForm() {
     setIsSubmitting(true);
     dispatch(showLoading("Creating your meditation..."));
     try {
-      await createMantra({
+      await createMeditation({
         title: title.trim(),
         description: description.trim() || undefined,
         visibility,
-        mantraArray: rows.map((row) => {
+        meditationArray: rows.map((row) => {
           if (row.type === "text") {
             return {
               id: row.id,
@@ -232,9 +252,12 @@ export default function CreateMeditationForm() {
         }),
       });
 
-       const refresh = await getAllMantras(accessToken);
-       dispatch(setMeditations(refresh.mantras ?? []));
-      setToast({ message: "Meditation submitted successfully.", variant: "success" });
+      const refresh = await getAllMeditations(accessToken);
+      dispatch(setMeditations(refresh.meditations ?? []));
+      setToast({
+        message: "Meditation submitted successfully.",
+        variant: "success",
+      });
       setTitle("");
       setDescription("");
       setVisibility("public");
@@ -243,7 +266,8 @@ export default function CreateMeditationForm() {
       setIsExpanded(false);
       setIsModalOpen(false);
     } catch (err: any) {
-      const message = err?.response?.data?.error?.message || "Unable to submit meditation.";
+      const message =
+        err?.response?.data?.error?.message || "Unable to submit meditation.";
       setToast({ message, variant: "error" });
     } finally {
       setIsSubmitting(false);
@@ -291,8 +315,12 @@ export default function CreateMeditationForm() {
         aria-expanded={isExpanded}
       >
         <div>
-          <h2 className="text-xl font-display font-semibold text-calm-900">Create New Meditation</h2>
-          <p className="text-sm text-calm-500">Build a custom meditation sequence</p>
+          <h2 className="text-xl font-display font-semibold text-calm-900">
+            Create New Meditation
+          </h2>
+          <p className="text-sm text-calm-500">
+            Build a custom meditation sequence
+          </p>
         </div>
         <span className="text-calm-500">
           {isExpanded ? (
@@ -303,7 +331,11 @@ export default function CreateMeditationForm() {
               stroke="currentColor"
               strokeWidth="2"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 15l7-7 7 7"
+              />
             </svg>
           ) : (
             <svg
@@ -313,7 +345,11 @@ export default function CreateMeditationForm() {
               stroke="currentColor"
               strokeWidth="2"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           )}
         </span>
@@ -322,7 +358,9 @@ export default function CreateMeditationForm() {
       {isExpanded && (
         <div className="rounded-3xl border border-dashed border-calm-200 bg-white/70 p-6 shadow-sm">
           <div>
-            <h3 className="text-lg font-display font-semibold text-calm-900 mb-4">Meditation Rows</h3>
+            <h3 className="text-lg font-display font-semibold text-calm-900 mb-4">
+              Meditation Rows
+            </h3>
 
             {soundsError && (
               <p className="mt-2 text-xs text-red-500">{soundsError}</p>
@@ -333,11 +371,21 @@ export default function CreateMeditationForm() {
                 {/* Header Row */}
                 <div className="grid grid-cols-[2.5rem_5rem_1fr_3rem_3rem_8rem] gap-2 px-2 pb-2 border-b border-calm-200">
                   <div className="text-xs font-semibold text-calm-600">#</div>
-                  <div className="text-xs font-semibold text-calm-600">Type</div>
-                  <div className="text-xs font-semibold text-calm-600">Text</div>
-                  <div className="text-xs font-semibold text-calm-600">Speed</div>
-                  <div className="text-xs font-semibold text-calm-600">Pause</div>
-                  <div className="text-xs font-semibold text-calm-600">Sound File</div>
+                  <div className="text-xs font-semibold text-calm-600">
+                    Type
+                  </div>
+                  <div className="text-xs font-semibold text-calm-600">
+                    Text
+                  </div>
+                  <div className="text-xs font-semibold text-calm-600">
+                    Speed
+                  </div>
+                  <div className="text-xs font-semibold text-calm-600">
+                    Pause
+                  </div>
+                  <div className="text-xs font-semibold text-calm-600">
+                    Sound File
+                  </div>
                 </div>
 
                 {/* Data Rows */}
@@ -350,7 +398,11 @@ export default function CreateMeditationForm() {
                     <div className="relative">
                       <button
                         type="button"
-                        onClick={() => setActiveRowMenu(activeRowMenu === row.id ? null : row.id)}
+                        onClick={() =>
+                          setActiveRowMenu(
+                            activeRowMenu === row.id ? null : row.id,
+                          )
+                        }
                         disabled={isSubmitting}
                         className="flex h-6 w-6 items-center justify-center rounded-full bg-calm-400 text-xs font-semibold text-white transition hover:bg-calm-500 disabled:cursor-not-allowed"
                       >
@@ -407,7 +459,10 @@ export default function CreateMeditationForm() {
                       value={row.type}
                       onChange={(event) => {
                         updateRow(row.id, {
-                          type: event.target.value as "text" | "pause" | "sound",
+                          type: event.target.value as
+                            | "text"
+                            | "pause"
+                            | "sound",
                           text: "",
                           speed: "",
                           pauseDuration: "",
@@ -439,12 +494,20 @@ export default function CreateMeditationForm() {
                         }}
                         disabled={row.type !== "text" || isSubmitting}
                         className={`w-full rounded border px-2 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
-                          rowErrors[row.id]?.text ? "border-red-300" : "border-calm-200"
+                          rowErrors[row.id]?.text
+                            ? "border-red-300"
+                            : "border-calm-200"
                         }`}
-                        placeholder={row.type === "text" ? "Begin with a calming phrase..." : ""}
+                        placeholder={
+                          row.type === "text"
+                            ? "Begin with a calming phrase..."
+                            : ""
+                        }
                       />
                       {rowErrors[row.id]?.text && (
-                        <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.text}</p>
+                        <p className="mt-1 text-xs text-red-500">
+                          {rowErrors[row.id]?.text}
+                        </p>
                       )}
                     </div>
 
@@ -464,12 +527,16 @@ export default function CreateMeditationForm() {
                         }}
                         disabled={row.type !== "text" || isSubmitting}
                         className={`w-full rounded border px-1 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
-                          rowErrors[row.id]?.speed ? "border-red-300" : "border-calm-200"
+                          rowErrors[row.id]?.speed
+                            ? "border-red-300"
+                            : "border-calm-200"
                         }`}
                         placeholder="1.0"
                       />
                       {rowErrors[row.id]?.speed && (
-                        <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.speed}</p>
+                        <p className="mt-1 text-xs text-red-500">
+                          {rowErrors[row.id]?.speed}
+                        </p>
                       )}
                     </div>
 
@@ -481,19 +548,25 @@ export default function CreateMeditationForm() {
                         min="0"
                         value={row.pauseDuration}
                         onChange={(event) => {
-                          updateRow(row.id, { pauseDuration: event.target.value });
+                          updateRow(row.id, {
+                            pauseDuration: event.target.value,
+                          });
                           if (rowErrors[row.id]?.pauseDuration) {
                             clearRowError(row.id, "pauseDuration");
                           }
                         }}
                         disabled={row.type !== "pause" || isSubmitting}
                         className={`w-full rounded border px-1 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
-                          rowErrors[row.id]?.pauseDuration ? "border-red-300" : "border-calm-200"
+                          rowErrors[row.id]?.pauseDuration
+                            ? "border-red-300"
+                            : "border-calm-200"
                         }`}
                         placeholder="5"
                       />
                       {rowErrors[row.id]?.pauseDuration && (
-                        <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.pauseDuration}</p>
+                        <p className="mt-1 text-xs text-red-500">
+                          {rowErrors[row.id]?.pauseDuration}
+                        </p>
                       )}
                     </div>
 
@@ -507,9 +580,13 @@ export default function CreateMeditationForm() {
                             clearRowError(row.id, "soundFile");
                           }
                         }}
-                        disabled={row.type !== "sound" || soundsLoading || isSubmitting}
+                        disabled={
+                          row.type !== "sound" || soundsLoading || isSubmitting
+                        }
                         className={`w-full rounded border px-2 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
-                          rowErrors[row.id]?.soundFile ? "border-red-300" : "border-calm-200"
+                          rowErrors[row.id]?.soundFile
+                            ? "border-red-300"
+                            : "border-calm-200"
                         }`}
                       >
                         <option value="">
@@ -522,7 +599,9 @@ export default function CreateMeditationForm() {
                         ))}
                       </select>
                       {rowErrors[row.id]?.soundFile && (
-                        <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.soundFile}</p>
+                        <p className="mt-1 text-xs text-red-500">
+                          {rowErrors[row.id]?.soundFile}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -537,8 +616,18 @@ export default function CreateMeditationForm() {
                       disabled={isSubmitting}
                       className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-calm-300 bg-green-500 text-white transition hover:bg-green-600 hover:border-calm-400 disabled:cursor-not-allowed disabled:bg-green-300"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
+                      <svg
+                        className="h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 5v14m-7-7h14"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -546,15 +635,27 @@ export default function CreateMeditationForm() {
               </div>
             ) : (
               <div className="mt-4 flex items-center justify-between">
-                <p className="text-sm text-calm-500">Add a row to begin building your sequence.</p>
+                <p className="text-sm text-calm-500">
+                  Add a row to begin building your sequence.
+                </p>
                 <button
                   type="button"
                   onClick={handleAddRow}
                   disabled={isSubmitting}
                   className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-calm-300 bg-green-500 text-white transition hover:bg-green-600 hover:border-calm-400 disabled:cursor-not-allowed disabled:bg-green-300"
                 >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
+                  <svg
+                    className="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 5v14m-7-7h14"
+                    />
                   </svg>
                 </button>
               </div>
@@ -593,7 +694,11 @@ export default function CreateMeditationForm() {
       />
 
       {toast && (
-        <Toast message={toast.message} variant={toast.variant} onClose={() => setToast(null)} />
+        <Toast
+          message={toast.message}
+          variant={toast.variant}
+          onClose={() => setToast(null)}
+        />
       )}
     </section>
   );
