@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  deleteMeditation,
+  deleteMeditationObj,
   favoriteMeditation,
   getAllMeditations,
-  updateMeditation,
+  updateMeditationObj,
 } from "@/lib/api/meditations";
 import AudioPlayer from "@/components/AudioPlayer";
 import ModalMeditationDetails from "@/components/modals/ModalMeditationDetails";
@@ -98,7 +98,7 @@ export default function TableMeditation() {
     },
   ) => {
     try {
-      const response = await updateMeditation(id, data);
+      const response = await updateMeditationObj(id, data);
       dispatch(updateMeditation(response.meditation));
       setToast({
         message: "Meditation updated successfully.",
@@ -126,7 +126,7 @@ export default function TableMeditation() {
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteMeditation(id);
+      await deleteMeditationObj(id);
       dispatch(deleteMeditation(id));
       setToast({
         message: "Meditation deleted successfully.",

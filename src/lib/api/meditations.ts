@@ -96,7 +96,7 @@ export const favoriteMeditation = async (
 };
 
 // PATCH /meditations/update/:id
-export const updateMeditation = async (
+export const updateMeditationObj = async (
   id: number,
   data: UpdateMeditationRequest,
 ): Promise<UpdateMeditationResponse> => {
@@ -108,7 +108,7 @@ export const updateMeditation = async (
 };
 
 // DELETE /meditations/:id
-export const deleteMeditation = async (
+export const deleteMeditationObj = async (
   id: number,
 ): Promise<DeleteMeditationResponse> => {
   const response = await apiClient.delete<DeleteMeditationResponse>(

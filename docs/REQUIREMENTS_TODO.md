@@ -91,7 +91,7 @@ This document provides a detailed, phase-based task list for building the GoLigh
   - `createMeditation(meditationData)`
   - `streamMeditation(id)` (returns stream URL)
   - `favoriteMeditation(id, isFavorite)`
-  - `deleteMeditation(id)`
+  - `deleteMeditationObj(id)`
 - [x] Create `src/lib/api/sounds.ts`:
   - `getSoundFiles()`
   - `uploadSoundFile(file, name, description)`

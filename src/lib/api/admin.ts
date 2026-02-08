@@ -78,7 +78,7 @@ export const getAllMeditations =
   };
 
 // DELETE /admin/meditations/:meditationId
-export const deleteMeditation = async (
+export const deleteMeditationObj = async (
   meditationId: number,
 ): Promise<DeleteMeditationResponse> => {
   const response = await apiClient.delete<DeleteMeditationResponse>(

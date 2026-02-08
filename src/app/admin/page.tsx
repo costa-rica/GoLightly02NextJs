@@ -12,7 +12,7 @@ import ModalConfirmDelete from "@/components/modals/ModalConfirmDelete";
 import ModalConfirmDeleteUser from "@/components/modals/ModalConfirmDeleteUser";
 import Toast from "@/components/Toast";
 import {
-  deleteMeditation,
+  deleteMeditationObj,
   deleteQueuerRecord,
   deleteUser,
   getAllMeditations,
@@ -259,7 +259,7 @@ export default function AdminPage() {
     if (!meditationDeleteTarget) return;
     setIsMeditationDeleting(true);
     try {
-      await deleteMeditation(meditationDeleteTarget.id);
+      await deleteMeditationObj(meditationDeleteTarget.id);
       setMeditations((prev) =>
         prev.filter((item) => item.id !== meditationDeleteTarget.id),
       );
