@@ -1,21 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { verifyEmail } from "@/lib/api/auth";
 
 export default function VerifyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success">("loading");
   const [message, setMessage] = useState("Verifying your email...");
 
   useEffect(() => {
     const token = searchParams.get("token");
     if (!token) {
-      setStatus("error");
-      setMessage("Verification token is missing.");
+      // Missing token - redirect to home with error
+      const errorTitle = "Verification Link Invalid";
+      const errorMessage = "Verification token is missing. Please check your email and try again.";
+      router.push(
+        `/?verify_error=1&error_title=${encodeURIComponent(errorTitle)}&error_message=${encodeURIComponent(errorMessage)}`
+      );
       return;
     }
 
@@ -24,13 +27,31 @@ export default function VerifyPage() {
         const response = await verifyEmail(token);
         setStatus("success");
         setMessage(response.message || "Email verified successfully.");
+        // Redirect to login after 2 seconds
         setTimeout(() => {
           router.push("/?login=1");
         }, 2000);
       } catch (err: any) {
-        const apiMessage = err?.response?.data?.error?.message || "Verification failed.";
-        setStatus("error");
-        setMessage(apiMessage);
+        // Handle errors by redirecting to home with error modal
+        let errorTitle = "Verification Failed";
+        let errorMessage = "Unable to verify your email. Please try again.";
+
+        const errorCode = err?.response?.data?.error?.code;
+        const apiMessage = err?.response?.data?.error?.message;
+
+        if (errorCode === "TOKEN_EXPIRED") {
+          errorTitle = "Verification Link Expired";
+          errorMessage = apiMessage || "This verification link has expired. Please request a new verification email.";
+        } else if (errorCode === "INVALID_TOKEN") {
+          errorTitle = "Invalid Verification Link";
+          errorMessage = apiMessage || "This verification link is invalid. Please contact support if you need assistance.";
+        } else if (apiMessage) {
+          errorMessage = apiMessage;
+        }
+
+        router.push(
+          `/?verify_error=1&error_title=${encodeURIComponent(errorTitle)}&error_message=${encodeURIComponent(errorMessage)}`
+        );
       }
     };
 
@@ -43,7 +64,7 @@ export default function VerifyPage() {
         <div className="rounded-3xl border border-calm-200/70 bg-white/90 p-8 shadow-sm">
           <p className="text-xs uppercase tracking-[0.2em] text-calm-400">Email verification</p>
           <h1 className="mt-3 text-3xl font-display font-semibold text-calm-900">
-            {status === "success" ? "Verified" : status === "error" ? "Verification failed" : "Please wait"}
+            {status === "success" ? "Verified" : "Please wait"}
           </h1>
           <p className="mt-3 text-sm text-calm-600">{message}</p>
 
@@ -51,25 +72,6 @@ export default function VerifyPage() {
             <p className="mt-4 text-xs text-calm-500">
               Redirecting you to login...
             </p>
-          )}
-
-          {status === "error" && (
-            <div className="mt-6 space-y-3 text-sm">
-              <Link
-                href="/?register=1"
-                className="inline-flex items-center justify-center rounded-full border border-primary-200 px-4 py-2 text-xs font-semibold text-primary-700 transition hover:border-primary-300"
-              >
-                Request new verification email
-              </Link>
-              <div>
-                <Link
-                  href="/?login=1"
-                  className="text-xs font-semibold text-calm-600 hover:text-primary-600"
-                >
-                  Back to login
-                </Link>
-              </div>
-            </div>
           )}
         </div>
       </div>
