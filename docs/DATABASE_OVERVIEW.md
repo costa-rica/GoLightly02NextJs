@@ -21,7 +21,7 @@ import {
   ElevenLabsFiles,
   ContractMeditationsElevenLabsFiles,
   ContractMeditationsSoundFiles,
-} from "golightly01db";
+} from "golightly02db";
 ```
 
 ### Environment Variables
@@ -67,7 +67,7 @@ const user = await User.create({
 const meditation = await Meditation.create({
   title: "Morning Meditation",
   description: "A peaceful morning meditation meditation",
-  visibility: "private",
+  visibility: "public",
   filename: "morning-meditation.mp3",
   filePath: "/audio/meditations/morning-meditation.mp3",
 });
@@ -120,7 +120,7 @@ await user.save();
 ```javascript
 // Delete by condition
 await Meditation.destroy({
-  where: { visibility: "private", userId: userId },
+  where: { visibility: "public", userId: userId },
 });
 
 // Delete using an instance
@@ -150,7 +150,7 @@ const meditationSoundContract = await ContractMeditationsSoundFiles.create({
 });
 
 // Track a listen event
-const listen = await ContractUserMeditationListen.create({
+const listen = await ContractUserMeditationsListen.create({
   userId: user.id,
   meditationId: meditation.id,
   listenCount: 1,
@@ -208,7 +208,7 @@ try {
   const meditation = await Meditation.create(
     {
       title: "User's First Meditation",
-      visibility: "private",
+      visibility: "public",
     },
     { transaction: t },
   );
@@ -247,7 +247,7 @@ try {
 
 - belongsToMany Meditation through ContractUsersMeditations (as "meditations")
 - hasMany ContractUsersMeditations (as "userMeditations")
-- hasMany ContractUserMeditationListen (as "meditationListens")
+- hasMany ContractUserMeditationsListen (as "meditationListens")
 - hasMany Queue (as "queueItems")
 
 ### Table: `Meditations`
@@ -259,7 +259,7 @@ try {
 | id          | id          | NO   | PK                                                                     |
 | title       | title       | NO   | name shown in UI                                                       |
 | description | description | YES  | public listing summary                                                 |
-| visibility  | visibility  | NO   | default `'private'`                                                    |
+| visibility  | visibility  | NO   | default `'public'`                                                     |
 | filename    | filename    | YES  | filename of the audio file                                             |
 | filePath    | filePath    | YES  | path to the audio file                                                 |
 | listenCount | integer     | NO   | default `0`, tracks non-registered user listens for public meditations |
@@ -268,7 +268,7 @@ try {
 
 - belongsToMany User through ContractUsersMeditations (as "users")
 - hasMany ContractUsersMeditations (as "contractUsersMeditations")
-- hasMany ContractUserMeditationListen (as "contractUserMeditationListenCount")
+- hasMany ContractUserMeditationsListen (as "contractUserMeditationListenCount")
 - belongsToMany ElevenLabsFiles through ContractMeditationsElevenLabsFiles (as "elevenLabsFiles")
 - belongsToMany SoundFiles through ContractMeditationsSoundFiles (as "soundFiles")
 
@@ -317,7 +317,7 @@ try {
 - belongsTo Meditation (as "meditation")
 - belongsTo ElevenLabsFiles (as "elevenLabsFile")
 
-### Table: `ContractUserMeditationListens`
+### Table: `ContractUserMeditationsListens`
 
 #### Columns
 

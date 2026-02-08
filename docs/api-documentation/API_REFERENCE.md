@@ -1,4 +1,4 @@
-# GoLightly01 API Reference
+# GoLightly02 API Reference
 
 This API is an ExpressJS TypeScript API that provides a RESTful interface for interacting with the SQLite database using Sequelize ORM.
 

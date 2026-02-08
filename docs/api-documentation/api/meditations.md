@@ -9,7 +9,7 @@ Most endpoints require authentication via JWT access token in the Authorization 
 Creates a new meditation meditation by combining pauses, text-to-speech, and sound files.
 
 - Authentication: Required
-- Processes meditation through GoLightly01Queuer service
+- Processes meditation through GoLightly02Queuer service
 - Returns queue ID and final file path
 - Meditation array supports three element types: pause, text, and sound_file
 
@@ -18,8 +18,10 @@ Creates a new meditation meditation by combining pauses, text-to-speech, and sou
 Request body:
 
 - `meditationArray` (array, required): Array of meditation elements in sequence
+- `title` (string, optional): Title for the meditation
+- `description` (string, optional): Description for the meditation
 
-Each element must have an `id` and one of the following:
+Each meditation array element must have an `id` and one of the following:
 
 - `pause_duration` (string): Duration in seconds (e.g., "3.0")
 - `text` (string): Text to convert to speech with optional `voice_id` and `speed`
@@ -32,6 +34,8 @@ curl --location 'http://localhost:3000/meditations/create' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' \
 --data '{
+  "title": "Morning Meditation",
+  "description": "A peaceful meditation to start your day",
   "meditationArray": [
     {
       "id": 1,
@@ -118,13 +122,20 @@ Sound file element:
 - `id` (number): Unique identifier for the element
 - `sound_file` (string): Filename from the sound_files endpoint
 
+### Notes
+
+- The `title` and `description` fields are optional and will be forwarded to GoLightly02Queuer
+- The queuer service is responsible for saving the title and description to the Meditations table
+- If title or description are not provided, they will be sent as `undefined` to the queuer
+- The queuer handles all database operations for meditation creation
+
 ## GET /meditations/:id/stream
 
 Streams a meditation MP3 file with automatic listen tracking.
 
 - Authentication: Optional (private meditations require authentication and ownership verification)
 - Supports HTTP range requests for audio seeking
-- Automatically tracks listens in both Meditations table and ContractUserMeditationListen table (if authenticated)
+- Automatically tracks listens in both Meditations table and ContractUserMeditationsListen table (if authenticated)
 - Returns audio/mpeg stream
 
 ### Parameters
@@ -135,15 +146,15 @@ URL parameters:
 
 ### Authorization Logic
 
-- **Public meditations** (visibility != "private"): Can be streamed by anyone (authenticated or anonymous)
-- **Private meditations** (visibility == "private"): Require authentication and user must own the meditation via ContractUsersMeditations
+- **Public meditations** (visibility == "public"): Can be streamed by anyone (authenticated or anonymous)
+- **Private meditations** (visibility != "public"): Require authentication and user must own the meditation via ContractUsersMeditations
 
 ### Listen Tracking
 
 When the endpoint is called:
 
 - **If authenticated**:
-  - Creates or increments `listenCount` in `ContractUserMeditationListen` table for the user-meditation pair
+  - Creates or increments `listenCount` in `ContractUserMeditationsListen` table for the user-meditation pair
   - Increments `listenCount` field in `Meditations` table by 1
 - **If anonymous**:
   - Only increments `listenCount` field in `Meditations` table by 1
@@ -294,12 +305,12 @@ const AudioPlayer = ({ meditationId, authToken }) => {
 
 ## GET /meditations/all
 
-Retrieves a list of meditations with total listen counts.
+Retrieves a list of meditations with total listen counts and favorite counts.
 
 - Authentication: Optional
 - Anonymous users receive only public meditations
 - Authenticated users automatically receive public meditations plus their own private meditations
-- Each meditation includes a `listenCount` field with total listen count
+- Each meditation includes a `listenCount` field with total listen count and a `favoriteCount` field showing how many users have favorited it
 - Behavior is determined by authentication state (no query parameters needed)
 
 ### Parameters
@@ -336,6 +347,7 @@ Anonymous user response (public meditations only):
       "filename": "output_20260203_222033.mp3",
       "filePath": "/Users/nick/Documents/_project_resources/GoLightly/audio_concatenator_output/20260203/",
       "listenCount": 42,
+      "favoriteCount": 8,
       "ownerUserId": 5,
       "createdAt": "2026-02-03T22:20:33.925Z",
       "updatedAt": "2026-02-03T22:28:55.436Z"
@@ -357,6 +369,7 @@ Authenticated user response (public meditations + user's private meditations):
       "filename": "output_20260203_222033.mp3",
       "filePath": "/Users/nick/Documents/_project_resources/GoLightly/audio_concatenator_output/20260203/",
       "listenCount": 42,
+      "favoriteCount": 8,
       "ownerUserId": 5,
       "createdAt": "2026-02-03T22:20:33.925Z",
       "updatedAt": "2026-02-03T22:28:55.436Z"
@@ -369,6 +382,7 @@ Authenticated user response (public meditations + user's private meditations):
       "filename": "output_20260204_103015.mp3",
       "filePath": "/Users/nick/Documents/_project_resources/GoLightly/audio_concatenator_output/20260204/",
       "listenCount": 5,
+      "favoriteCount": 2,
       "ownerUserId": 3,
       "createdAt": "2026-02-04T10:30:15.125Z",
       "updatedAt": "2026-02-04T10:35:22.789Z"
@@ -393,14 +407,15 @@ Authenticated user response (public meditations + user's private meditations):
 
 ### Notes
 
-- Public meditations are those where `visibility` is not "private"
+- Private meditations are those where `visibility` is not "public"
 - Anonymous users can access the endpoint and will only receive public meditations
 - Authenticated users automatically receive:
   - All public meditations
   - Their own private meditations (verified via ContractUsersMeditations)
 - No query parameters are needed - authentication state determines the response
 - The `listenCount` field is read directly from the `Meditations` table for each meditation
-- Listen counts are shown for all users (authenticated and anonymous)
+- The `favoriteCount` field is calculated by counting records in `ContractUserMeditationsListen` table where `favorite` is true for that meditation
+- Listen counts and favorite counts are shown for all users (authenticated and anonymous)
 - All fields from the Meditations table are included in the response:
   - `id`: Unique identifier for the meditation
   - `title`: Name/title of the meditation
@@ -408,19 +423,21 @@ Authenticated user response (public meditations + user's private meditations):
   - `visibility`: "public" or "private"
   - `filename`: Name of the MP3 file
   - `filePath`: Full directory path to the meditation file
-  - `listenCount`: Total listen count
+  - `listenCount`: Total listen count across all users
+  - `favoriteCount`: Total number of users who have favorited this meditation
   - `ownerUserId`: User ID of the meditation owner (from ContractUsersMeditations table), or "missing" if no owner exists
   - `createdAt`: Timestamp when meditation was created
   - `updatedAt`: Timestamp when meditation was last updated
 - Uses optional authentication middleware, allowing both authenticated and anonymous access
 - Ownership information is fetched efficiently using a Sequelize LEFT JOIN
+- Favorite counts are fetched efficiently with a single grouped COUNT query
 
 ## POST /meditations/favorite/:meditationId/:trueOrFalse
 
 Marks a meditation as favorited or unfavorited for the authenticated user.
 
 - Authentication: Required
-- Creates or updates the ContractUserMeditationListen record for the user-meditation pair
+- Creates or updates the ContractUserMeditationsListen record for the user-meditation pair
 - If the user has never listened to the meditation, creates a new record with listenCount=0
 - If a record exists, updates only the favorite field
 
@@ -523,7 +540,7 @@ Success (200):
 
 ### Notes
 
-- If the user has never listened to the meditation, a new ContractUserMeditationListen record is created with `listenCount=0` and `favorite` set to the requested value
+- If the user has never listened to the meditation, a new ContractUserMeditationsListen record is created with `listenCount=0` and `favorite` set to the requested value
 - If a record already exists, only the `favorite` field is updated
 - The user does not need to own the meditation to favorite it
 - Favoriting works for both public and private meditations (as long as they exist in the database)
