@@ -6,6 +6,7 @@ import { login as loginAction } from "@/store/features/authSlice";
 import { login, googleAuth } from "@/lib/api/auth";
 import { validateEmail, validatePassword } from "@/lib/utils/validation";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { logger } from "@/lib/logger";
 
 interface ModalLoginProps {
   isOpen: boolean;
@@ -124,7 +125,12 @@ export default function ModalLogin({
   };
 
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    logger.info("Google Sign-In button clicked in login modal", {
+      hasCredential: !!credentialResponse.credential,
+    });
+
     if (!credentialResponse.credential) {
+      logger.error("Google Sign-In failed: No credential received");
       setErrors({ general: "Google Sign-In failed. Please try again." });
       return;
     }
@@ -133,7 +139,15 @@ export default function ModalLogin({
     setErrors({});
 
     try {
+      logger.info("Sending Google auth request to API");
       const response = await googleAuth({ idToken: credentialResponse.credential });
+
+      logger.info("Google authentication successful", {
+        userId: response.user.id,
+        email: response.user.email,
+        authProvider: response.user.authProvider,
+        isAdmin: response.user.isAdmin,
+      });
 
       // Update Redux state
       dispatch(
@@ -148,6 +162,12 @@ export default function ModalLogin({
       setPassword("");
       onClose();
     } catch (error: any) {
+      logger.error("Google Sign-In failed", {
+        status: error.response?.status,
+        errorCode: error.response?.data?.error?.code,
+        errorMessage: error.response?.data?.error?.message,
+      });
+
       if (error.response?.data?.error?.message) {
         setErrors({ general: error.response.data.error.message });
       } else {
@@ -159,6 +179,7 @@ export default function ModalLogin({
   };
 
   const handleGoogleError = () => {
+    logger.error("Google Sign-In error callback triggered");
     setErrors({ general: "Google Sign-In failed. Please try again." });
   };
 

@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import StoreProvider from "@/store/StoreProvider";
 import AppShell from "@/components/AppShell";
 import GoogleAuthProvider from "@/components/GoogleAuthProvider";
+import AppLogger from "@/components/AppLogger";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -54,6 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="font-sans">
+        <AppLogger />
         <GoogleAuthProvider>
           <StoreProvider>
             <AppShell>{children}</AppShell>

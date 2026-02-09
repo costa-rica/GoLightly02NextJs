@@ -1,5 +1,6 @@
 import apiClient from './client';
 import { User } from '@/store/features/authSlice';
+import { logger } from '@/lib/logger';
 
 export interface RegisterRequest {
   email: string;
@@ -85,6 +86,28 @@ export const verifyEmail = async (token: string): Promise<VerifyEmailResponse> =
 
 // POST /users/google-auth
 export const googleAuth = async (data: GoogleAuthRequest): Promise<GoogleAuthResponse> => {
-  const response = await apiClient.post<GoogleAuthResponse>('/users/google-auth', data);
-  return response.data;
+  logger.info('Calling Google auth API endpoint', {
+    endpoint: '/users/google-auth',
+    hasToken: !!data.idToken,
+  });
+
+  try {
+    const response = await apiClient.post<GoogleAuthResponse>('/users/google-auth', data);
+
+    logger.info('Google auth API response received', {
+      status: response.status,
+      hasAccessToken: !!response.data.accessToken,
+      userId: response.data.user?.id,
+      authProvider: response.data.user?.authProvider,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    logger.error('Google auth API call failed', {
+      status: error.response?.status,
+      errorCode: error.response?.data?.error?.code,
+      errorMessage: error.response?.data?.error?.message,
+    });
+    throw error;
+  }
 };

@@ -10,6 +10,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { showLoading, hideLoading } from "@/store/features/uiSlice";
 import { login as loginAction } from "@/store/features/authSlice";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { logger } from "@/lib/logger";
 
 interface ModalRegisterProps {
   isOpen: boolean;
@@ -131,7 +132,12 @@ export default function ModalRegister({
   };
 
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    logger.info("Google Sign-In button clicked in registration modal", {
+      hasCredential: !!credentialResponse.credential,
+    });
+
     if (!credentialResponse.credential) {
+      logger.error("Google Sign-In failed: No credential received in registration");
       setErrors({ general: "Google Sign-In failed. Please try again." });
       return;
     }
@@ -141,7 +147,15 @@ export default function ModalRegister({
     dispatch(showLoading("Signing up with Google..."));
 
     try {
+      logger.info("Sending Google registration request to API");
       const response = await googleAuth({ idToken: credentialResponse.credential });
+
+      logger.info("Google registration successful", {
+        userId: response.user.id,
+        email: response.user.email,
+        authProvider: response.user.authProvider,
+        isAdmin: response.user.isAdmin,
+      });
 
       // Update Redux state
       dispatch(
@@ -156,6 +170,12 @@ export default function ModalRegister({
       setPassword("");
       onClose();
     } catch (error: any) {
+      logger.error("Google registration failed", {
+        status: error.response?.status,
+        errorCode: error.response?.data?.error?.code,
+        errorMessage: error.response?.data?.error?.message,
+      });
+
       if (error.response?.data?.error?.message) {
         setErrors({ general: error.response.data.error.message });
       } else {
@@ -168,6 +188,7 @@ export default function ModalRegister({
   };
 
   const handleGoogleError = () => {
+    logger.error("Google Sign-In error callback triggered in registration");
     setErrors({ general: "Google Sign-In failed. Please try again." });
   };
 
