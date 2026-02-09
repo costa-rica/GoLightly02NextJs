@@ -4,6 +4,7 @@ export interface User {
   id: number;
   email: string;
   isAdmin: boolean;
+  authProvider: 'local' | 'google' | 'both';
 }
 
 export interface AuthState {

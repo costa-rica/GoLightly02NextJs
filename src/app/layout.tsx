@@ -3,6 +3,7 @@ import { Inter, Outfit } from "next/font/google";
 import "@/styles/globals.css";
 import StoreProvider from "@/store/StoreProvider";
 import AppShell from "@/components/AppShell";
+import GoogleAuthProvider from "@/components/GoogleAuthProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -53,9 +54,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="font-sans">
-        <StoreProvider>
-          <AppShell>{children}</AppShell>
-        </StoreProvider>
+        <GoogleAuthProvider>
+          <StoreProvider>
+            <AppShell>{children}</AppShell>
+          </StoreProvider>
+        </GoogleAuthProvider>
       </body>
     </html>
   );

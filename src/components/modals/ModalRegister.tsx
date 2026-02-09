@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
-import { register } from "@/lib/api/auth";
+import { register, googleAuth } from "@/lib/api/auth";
 import {
   validateEmail,
   validatePassword,
 } from "@/lib/utils/validation";
 import { useAppDispatch } from "@/store/hooks";
 import { showLoading, hideLoading } from "@/store/features/uiSlice";
+import { login as loginAction } from "@/store/features/authSlice";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 interface ModalRegisterProps {
   isOpen: boolean;
@@ -126,6 +128,47 @@ export default function ModalRegister({
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      setErrors({ general: "Google Sign-In failed. Please try again." });
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+    dispatch(showLoading("Signing up with Google..."));
+
+    try {
+      const response = await googleAuth({ idToken: credentialResponse.credential });
+
+      // Update Redux state
+      dispatch(
+        loginAction({
+          user: response.user,
+          accessToken: response.accessToken,
+        }),
+      );
+
+      // Close modal and reset form
+      setEmail("");
+      setPassword("");
+      onClose();
+    } catch (error: any) {
+      if (error.response?.data?.error?.message) {
+        setErrors({ general: error.response.data.error.message });
+      } else {
+        setErrors({ general: "Google Sign-In failed. Please try again." });
+      }
+    } finally {
+      setIsLoading(false);
+      dispatch(hideLoading());
+    }
+  };
+
+  const handleGoogleError = () => {
+    setErrors({ general: "Google Sign-In failed. Please try again." });
   };
 
   return (
@@ -283,6 +326,33 @@ export default function ModalRegister({
             {isLoading ? "Creating account..." : "Register"}
           </button>
         </form>
+
+        {/* Divider */}
+        {!successMessage && (
+          <>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-calm-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-2 text-calm-500">Or sign up with</span>
+              </div>
+            </div>
+
+            {/* Google Sign-In Button */}
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                useOneTap={false}
+                theme="outline"
+                size="large"
+                text="signup_with"
+                width="384"
+              />
+            </div>
+          </>
+        )}
 
         {/* Login link */}
         {!successMessage && (

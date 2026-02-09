@@ -43,6 +43,16 @@ export interface VerifyEmailResponse {
   message: string;
 }
 
+export interface GoogleAuthRequest {
+  idToken: string;
+}
+
+export interface GoogleAuthResponse {
+  message: string;
+  accessToken: string;
+  user: User;
+}
+
 // POST /users/register
 export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
   const response = await apiClient.post<RegisterResponse>('/users/register', data);
@@ -70,5 +80,11 @@ export const resetPassword = async (data: ResetPasswordRequest): Promise<ResetPa
 // GET /users/verify
 export const verifyEmail = async (token: string): Promise<VerifyEmailResponse> => {
   const response = await apiClient.get<VerifyEmailResponse>(`/users/verify?token=${token}`);
+  return response.data;
+};
+
+// POST /users/google-auth
+export const googleAuth = async (data: GoogleAuthRequest): Promise<GoogleAuthResponse> => {
+  const response = await apiClient.post<GoogleAuthResponse>('/users/google-auth', data);
   return response.data;
 };

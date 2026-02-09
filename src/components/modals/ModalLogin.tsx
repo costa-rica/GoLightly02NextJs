@@ -3,8 +3,9 @@
 import { useEffect, useState, type FormEvent, type MouseEvent } from "react";
 import { useAppDispatch } from "@/store/hooks";
 import { login as loginAction } from "@/store/features/authSlice";
-import { login } from "@/lib/api/auth";
+import { login, googleAuth } from "@/lib/api/auth";
 import { validateEmail, validatePassword } from "@/lib/utils/validation";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 interface ModalLoginProps {
   isOpen: boolean;
@@ -96,7 +97,16 @@ export default function ModalLogin({
       if (error.response?.status === 401) {
         setErrors({ general: "Invalid email or password" });
       } else if (error.response?.status === 403) {
-        setErrors({ general: "Please verify your email before logging in" });
+        const errorCode = error.response?.data?.error?.code;
+        if (errorCode === "PASSWORD_AUTH_DISABLED") {
+          setErrors({
+            general: "This account uses Google Sign-In. Please use the Google button below to log in."
+          });
+        } else if (errorCode === "EMAIL_NOT_VERIFIED") {
+          setErrors({ general: "Please verify your email before logging in" });
+        } else {
+          setErrors({ general: error.response.data.error.message || "Please verify your email before logging in" });
+        }
       } else if (error.response?.data?.error?.message) {
         setErrors({ general: error.response.data.error.message });
       } else {
@@ -111,6 +121,45 @@ export default function ModalLogin({
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      setErrors({ general: "Google Sign-In failed. Please try again." });
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const response = await googleAuth({ idToken: credentialResponse.credential });
+
+      // Update Redux state
+      dispatch(
+        loginAction({
+          user: response.user,
+          accessToken: response.accessToken,
+        }),
+      );
+
+      // Close modal and reset form
+      setEmail("");
+      setPassword("");
+      onClose();
+    } catch (error: any) {
+      if (error.response?.data?.error?.message) {
+        setErrors({ general: error.response.data.error.message });
+      } else {
+        setErrors({ general: "Google Sign-In failed. Please try again." });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setErrors({ general: "Google Sign-In failed. Please try again." });
   };
 
   return (
@@ -225,6 +274,29 @@ export default function ModalLogin({
             {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-calm-200"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-2 text-calm-500">Or continue with</span>
+          </div>
+        </div>
+
+        {/* Google Sign-In Button */}
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            useOneTap={false}
+            theme="outline"
+            size="large"
+            text="signin_with"
+            width="384"
+          />
+        </div>
 
         {/* Register link */}
         <div className="mt-6 text-center text-sm text-calm-600">
