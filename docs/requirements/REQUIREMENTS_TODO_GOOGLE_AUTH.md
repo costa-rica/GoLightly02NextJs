@@ -5,6 +5,7 @@ This document outlines the tasks required to implement Google Authentication for
 ## Overview
 
 Users will be able to register and login using their Google accounts. The implementation will:
+
 - Allow users to use BOTH email/password and Google authentication
 - Automatically link Google accounts to existing email/password accounts
 - Track authentication methods using an `authProvider` field
@@ -13,6 +14,7 @@ Users will be able to register and login using their Google accounts. The implem
 ## Implementation Strategy
 
 When a user authenticates with Google:
+
 1. Frontend receives Google ID token
 2. Frontend sends ID token to API endpoint `/users/google-auth`
 3. API verifies token with Google's servers
@@ -29,35 +31,35 @@ When a user authenticates with Google:
 
 ### Tasks
 
-- [ ] Make password column nullable in Users model
-  - [ ] Update `password` field definition to allow null
-  - [ ] Update TypeScript interface to `password: string | null`
-  - [ ] Test that Sequelize properly handles null passwords
+- [x] Make password column nullable in Users model
+  - [x] Update `password` field definition to allow null
+  - [x] Update TypeScript interface to `password: string | null`
+  - [x] Test that Sequelize properly handles null passwords
 
-- [ ] Add `authProvider` column to Users model
-  - [ ] Add new column: `authProvider` (string, not null, default: 'local')
-  - [ ] Allowed values: 'local', 'google', 'both'
-  - [ ] Add TypeScript type definition
-  - [ ] Add database validation/constraints
+- [x] Add `authProvider` column to Users model
+  - [x] Add new column: `authProvider` (string, not null, default: 'local')
+  - [x] Allowed values: 'local', 'google', 'both'
+  - [x] Add TypeScript type definition
+  - [x] Add database validation/constraints
 
-- [ ] Update existing database records
-  - [ ] Create migration script to set `authProvider='local'` for all existing users
-  - [ ] Document migration process in README
+- [x] Update existing database records
+  - [x] ~~Create migration script to set `authProvider='local'` for all existing users~~ (N/A - starting with fresh database)
+  - [x] Document migration process in README
 
-- [ ] Update model validations
-  - [ ] Ensure password is required when `authProvider='local'` or `authProvider='both'`
-  - [ ] Ensure password can be null when `authProvider='google'`
-  - [ ] Add validation comments in code
+- [x] Update model validations
+  - [x] ~~Ensure password is required when `authProvider='local'` or `authProvider='both'`~~ (Validation at API level)
+  - [x] Ensure password can be null when `authProvider='google'`
+  - [x] Add validation comments in code
 
-- [ ] Rebuild and publish package
-  - [ ] Run `npm run build`
-  - [ ] Test in isolation
-  - [ ] Document breaking changes in CHANGELOG or README
+- [x] Rebuild and publish package
+  - [x] Run `npm run build`
+  - [x] Test in isolation
+  - [x] Document breaking changes in CHANGELOG or README
 
-- [ ] Update database documentation
-  - [ ] Update `docs/DATABASE_OVERVIEW.md` with new schema changes
-  - [ ] Add notes about authProvider field usage
-  - [ ] Add examples of different user types
+- [x] Update database documentation
+  - [x] Update `docs/DATABASE_OVERVIEW.md` with new schema changes
+  - [x] Add notes about authProvider field usage
+  - [x] Add examples of different user types
 
 ---
 
@@ -65,80 +67,92 @@ When a user authenticates with Google:
 
 ### Tasks
 
-- [ ] Install dependencies
-  - [ ] Run `npm install google-auth-library`
-  - [ ] Run `npm install --save-dev @types/google-auth-library` (if available)
-  - [ ] Verify installation and types
+- [x] Install dependencies
+  - [x] Run `npm install google-auth-library`
+  - [x] ~~Run `npm install --save-dev @types/google-auth-library` (if available)~~ (Types included in package)
+  - [x] Verify installation and types
 
-- [ ] Update GoLightly02Db package
-  - [ ] Run `npm install file:/Users/nick/Documents/GoLightly02Db`
-  - [ ] Verify new schema is available
-  - [ ] Test database connection with new schema
+- [x] Update GoLightly02Db package
+  - [x] Run `npm install file:/Users/nick/Documents/GoLightly02Db`
+  - [x] Verify new schema is available
+  - [x] Test database connection with new schema
 
-- [ ] Add environment variables
-  - [ ] Add `GOOGLE_CLIENT_ID` to `.env`
-  - [ ] Add `GOOGLE_CLIENT_ID` to `.env.example` with description
-  - [ ] Validate env var on startup in `src/modules/onStartup.ts` (or equivalent)
+- [x] Add environment variables
+  - [x] Add `GOOGLE_CLIENT_ID` to `.env`
+  - [x] Add `GOOGLE_CLIENT_ID` to `.env.example` with description
+  - [x] Validate env var on startup in `src/index.ts` (added to requiredVars array)
 
-- [ ] Create Google authentication module
-  - [ ] Create `src/modules/googleAuth.ts`
-  - [ ] Implement `verifyGoogleToken(token: string)` function
-    - [ ] Import OAuth2Client from google-auth-library
-    - [ ] Verify ID token with Google
-    - [ ] Extract email, name, and Google ID from payload
-    - [ ] Return user data or throw error
-  - [ ] Add error handling and logging
-  - [ ] Add TypeScript types for Google user data
+- [x] Create Google authentication module
+  - [x] Create `src/modules/googleAuth.ts`
+  - [x] Implement `verifyGoogleToken(token: string)` function
+    - [x] Import OAuth2Client from google-auth-library
+    - [x] Verify ID token with Google
+    - [x] Extract email, name, and Google ID from payload
+    - [x] Return user data or throw error
+  - [x] Add error handling and logging
+  - [x] Add TypeScript types for Google user data
 
-- [ ] Create Google authentication endpoint
-  - [ ] Add route: `POST /users/google-auth` in `src/routes/users.ts`
-  - [ ] Validate request body contains `idToken`
-  - [ ] Call `verifyGoogleToken()` to verify token
-  - [ ] Extract email from Google payload
-  - [ ] Check if user exists by email (case-insensitive lookup)
-  - [ ] **If user does NOT exist**:
-    - [ ] Create new User with:
-      - [ ] `email` from Google payload (normalized to lowercase)
-      - [ ] `password` = null
-      - [ ] `isEmailVerified` = true
-      - [ ] `emailVerifiedAt` = current timestamp
-      - [ ] `isAdmin` = false
-      - [ ] `authProvider` = 'google'
-    - [ ] Generate JWT access token with userId and email
-    - [ ] Return success response with token and user info
-  - [ ] **If user exists with authProvider='local'**:
-    - [ ] Update user record: set `authProvider='both'`
-    - [ ] Generate JWT access token
-    - [ ] Return success response with token and user info
-  - [ ] **If user exists with authProvider='google' or 'both'**:
-    - [ ] Generate JWT access token
-    - [ ] Return success response with token and user info
-  - [ ] Add comprehensive error handling
-  - [ ] Add logging for all cases
+- [x] Create Google authentication endpoint
+  - [x] Add route: `POST /users/google-auth` in `src/routes/users.ts`
+  - [x] Validate request body contains `idToken`
+  - [x] Call `verifyGoogleToken()` to verify token
+  - [x] Extract email from Google payload
+  - [x] Check if user exists by email (case-insensitive lookup)
+  - [x] **If user does NOT exist**:
+    - [x] Create new User with:
+      - [x] `email` from Google payload (normalized to lowercase)
+      - [x] `password` = null
+      - [x] `isEmailVerified` = true
+      - [x] `emailVerifiedAt` = current timestamp
+      - [x] `isAdmin` = false
+      - [x] `authProvider` = 'google'
+    - [x] Generate JWT access token with userId and email
+    - [x] Return success response with token and user info
+  - [x] **If user exists with authProvider='local'**:
+    - [x] Update user record: set `authProvider='both'`
+    - [x] Generate JWT access token
+    - [x] Return success response with token and user info
+  - [x] **If user exists with authProvider='google' or 'both'**:
+    - [x] Generate JWT access token
+    - [x] Return success response with token and user info
+  - [x] Add comprehensive error handling
+  - [x] Add logging for all cases
 
-- [ ] Update existing login validation
-  - [ ] In `POST /users/login`, handle users with null passwords
-  - [ ] Return error if user has `authProvider='google'` and tries to login with password
-  - [ ] Error message: "This account uses Google Sign-In. Please use the Google button to log in."
+- [x] Update existing login validation
+  - [x] In `POST /users/login`, handle users with null passwords
+  - [x] Return error if user has `authProvider='google'` and tries to login with password
+  - [x] Error message: "This account uses Google Sign-In. Please use the Google button to log in."
 
-- [ ] Update registration validation
-  - [ ] In `POST /users/register`, check if email already exists with Google auth
-  - [ ] Return appropriate error if user exists with `authProvider='google'`
-  - [ ] Error message: "An account with this email already exists. Please use Google Sign-In."
+- [x] Update registration validation
+  - [x] In `POST /users/register`, check if email already exists with Google auth
+  - [x] Return appropriate error if user exists with `authProvider='google'`
+  - [x] Error message: "An account with this email already exists. Please use Google Sign-In."
 
-- [ ] Update API documentation
-  - [ ] Add Google authentication endpoint to `docs/api-documentation/api/users.md`
-  - [ ] Document request/response format
-  - [ ] Document all error cases
-  - [ ] Add example curl requests
+- [x] Update API documentation
+  - [x] Add Google authentication endpoint to `docs/api/users.md`
+  - [x] Document request/response format
+  - [x] Document all error cases
+  - [x] Add example curl requests
 
-- [ ] Testing
+- [ ] Testing (Skipped per user request)
   - [ ] Test new user registration via Google
   - [ ] Test existing email/password user signing in with Google (account linking)
   - [ ] Test existing Google user signing in again
   - [ ] Test invalid Google token
   - [ ] Test email/password login for Google-only users (should fail)
   - [ ] Test email/password login for linked accounts (should succeed)
+
+### Implementation Notes
+
+- Added four new error codes to `src/modules/errorHandler.ts`:
+  - `GOOGLE_AUTH_FAILED`: General Google authentication failures
+  - `INVALID_GOOGLE_TOKEN`: Invalid or expired Google ID tokens
+  - `GOOGLE_USER_EXISTS`: When user tries to register with email/password but account exists with Google auth
+  - `PASSWORD_AUTH_DISABLED`: When Google-only user tries to login with password
+- Google token verification is performed server-side using `google-auth-library` for security
+- Email addresses are normalized to lowercase for consistent lookups
+- Response format for `/users/google-auth` matches existing `/users/login` endpoint for consistency
+- Registration endpoint now sets `authProvider='local'` for new email/password users
 
 ---
 
@@ -418,6 +432,7 @@ When a user authenticates with Google:
 ## Notes & Considerations
 
 ### Security Best Practices
+
 - Always verify Google ID tokens on the server side using Google's libraries
 - Never trust user data from the client without verification
 - Use HTTPS in production
@@ -425,17 +440,20 @@ When a user authenticates with Google:
 - Log authentication attempts for security auditing
 
 ### User Experience
+
 - Make Google Sign-In button prominent and easy to find
 - Provide clear error messages when authentication fails
 - Explain benefits of linking accounts
 - Allow users to see which authentication methods they have enabled
 
 ### Database Migration
+
 - Existing users will have `authProvider='local'` by default
 - No existing passwords need to be modified
 - The password column will remain populated for all current users
 
 ### Future Enhancements
+
 - Support for other OAuth providers (Facebook, Apple, Microsoft)
 - Two-factor authentication
 - Account recovery options for Google-only accounts
@@ -445,5 +463,5 @@ When a user authenticates with Google:
 ---
 
 **Document Version**: 1.0
-**Created**: February 2026
+**Created**: February 9, 2026
 **Status**: Planning Phase
