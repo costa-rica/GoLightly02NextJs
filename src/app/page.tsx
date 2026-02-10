@@ -14,7 +14,7 @@ export default function Home() {
           </h1>
           <p className="mt-3 max-w-2xl text-base text-calm-600 md:text-lg">
             Balance purposeful affirmations with spacious silence to design
-            meditations that feel personal, grounded, and restorative.
+            meditations that feel personal.
           </p>
         </header>
 
