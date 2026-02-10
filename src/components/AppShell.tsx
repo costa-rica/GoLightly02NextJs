@@ -55,8 +55,31 @@ export default function AppShell({ children }: AppShellProps) {
 
   return (
     <>
-      <Navigation onLoginClick={() => setIsLoginOpen(true)} />
-      <div className="pt-16">{children}</div>
+      <div className="min-h-screen flex flex-col">
+        <Navigation onLoginClick={() => setIsLoginOpen(true)} />
+        <div className="pt-16 flex-1">{children}</div>
+        <footer className="px-4 py-6 text-xs text-slate-500">
+          <div className="mx-auto max-w-6xl">
+            <div className="flex items-center gap-2">
+              <a
+                className="hover:text-slate-700 transition-colors"
+                href="mailto:nrodrig1@gmail.com"
+              >
+                Contact Us
+              </a>
+              <span className="text-slate-400">|</span>
+              <a
+                className="hover:text-slate-700 transition-colors"
+                href="https://formy.go-lightly.love"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Help Us Improve
+              </a>
+            </div>
+          </div>
+        </footer>
+      </div>
       <ModalLogin
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
